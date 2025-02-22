@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% include "header.html" %}
 
 {% block title %}Add Faculty{% endblock %}
 
@@ -17,4 +18,6 @@
     <input type="text" id="unique_acr" name="unique_acr" required>
     <button type="submit">Add Faculty</button>
 </form>
+
+{% include "footer.html" %}
 {% endblock %}

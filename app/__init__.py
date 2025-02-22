@@ -11,7 +11,7 @@ def create_app():
     app.config.from_object(Config)
 
     db.init_app(app)
-    mail.init_app(app)
+    # mail.init_app(app)
 
     from .routes import admin_routes, faculty_routes, intern_routes, auth_routes, home_routes, coordinator_routes
     app.register_blueprint(admin_routes.bp)

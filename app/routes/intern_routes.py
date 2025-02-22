@@ -6,7 +6,6 @@ from app.utils.auth_utils import login_required
 bp = Blueprint('intern', __name__, url_prefix='/intern')
 
 @bp.route('/application_form', methods=['GET', 'POST'])
-@login_required
 def application_form():
     if request.method == 'POST':
         full_name = request.form['full_name']
