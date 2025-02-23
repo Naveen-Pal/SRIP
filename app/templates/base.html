@@ -4,24 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SRIP Portal{% endblock %}</title>
+    <meta name="description" content="SRIP Portal for managing interns, faculty, and projects.">
+    <meta name="keywords" content="SRIP, Portal, Interns, Faculty, Projects">
+    <meta name="author" content="Naveen-Pal">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <header>
-        <h1>SRIP Portal</h1>
-        <nav>
-            <ul>
-                {% for button in header_buttons %}
-                    <li><a href="{{ button.url }}">{{ button.label }}</a></li>
-                {% endfor %}
-            </ul>
-        </nav>
-    </header>
-    <main>
+    {% include "header.html" %}
+    <main class="container mt-5">
         {% block content %}{% endblock %}
     </main>
-    <footer>
-        <p>&copy; 2025 SRIP Portal</p>
-    </footer>
+    {% include "footer.html" %}
 </body>
 </html>

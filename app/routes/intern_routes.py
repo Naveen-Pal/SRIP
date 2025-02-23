@@ -61,3 +61,7 @@ def application_form():
         return redirect(url_for('home.home'))
     
     return render_template('intern/application_form.html')
+
+@bp.route('/projects', methods=['GET', 'POST'])
+def projects():
+    return render_template('intern/projects.html')

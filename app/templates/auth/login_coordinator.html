@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Coordinator Login{% endblock %}
+
+{% block content %}
+<h2>Coordinator Login</h2>
+<form action="{{ url_for('auth.login_coordinator') }}" method="post">
+    <label for="user_login">Username:</label>
+    <input type="text" id="user_login" name="user_login" required>
+    <label for="user_pass">Password:</label>
+    <input type="password" id="user_pass" name="user_pass" required>
+    <button type="submit">Login</button>
+</form>
+{% endblock %}
