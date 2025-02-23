@@ -333,6 +333,7 @@ textarea {
     function fetchProjects(facultyId) {
         // Clear project dropdown and title if no faculty is selected
         if (!facultyId) {
+            console.log("I am here")
             document.getElementById("project_code").innerHTML = '<option value="">Select Project Code</option>';
             document.getElementById("project_title").value = "";
             return;
@@ -345,6 +346,7 @@ textarea {
                 // Populate project code dropdown
                 let projectCodeDropdown = document.getElementById("project_code");
                 projectCodeDropdown.innerHTML = '<option value="">Select Project Code</option>';
+
                 data.projects.forEach(project => {
                     let option = document.createElement("option");
                     option.value = project.project_code;
