@@ -1,9 +1,24 @@
-<header>
-    <h1>SRIP Portal</h1>
-    <nav>
-        <ul>
-            <li><a href="{{ url_for('home.home') }}">Home</a></li>
-            <!-- <li><a href="{{ url_for('auth.register') }}">Register</a></li> -->
-        </ul>
-    </nav>
+<header class="bg-primary text-white p-3 mb-4">
+    <div class="container">
+        <h1 class="h3">SRIP Portal</h1>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-auto">
+                    {% if session.get('user_type') == 0 %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('intern.dashboard') }}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('intern.submit_report') }}">Submit Report</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('intern.application_form') }}">Application Form</a></li>
+                    {% elif session.get('user_type') == 1 %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('faculty.add_project') }}">Add Project</a></li>
+                        {% elif session.get('user_type') == 2 %}
+                        {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
+                        {% endif %}
+                        {% if session.get('user_id') %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </div>
 </header>
