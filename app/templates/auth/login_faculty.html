@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Faculty Login{% endblock %}
+
+{% block content %}
+<h2>Faculty Login</h2>
+<form action="{{ url_for('auth.login_faculty') }}" method="post">
+    <label for="email">Email:</label>
+    <input type="text" id="email" name="email" required>
+    <label for="user_pass">Password:</label>
+    <input type="password" id="user_pass" name="user_pass" required>
+    <button type="submit">Login</button>
+</form>
+{% endblock %}

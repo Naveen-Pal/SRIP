@@ -131,9 +131,9 @@
             </b>
         </div>
             <div class="buttons">
-            <a href="{{ url_for('auth.login') }}" class="button">Selected Intern</a>
+                <a href="{{ url_for('intern.application_form') }}" class="button">Prospective Intern</a>
+            <a href="{{ url_for('auth.login_intern') }}" class="button">Selected Intern</a>
             <a href="{{ url_for('faculty.add_project') }}" class="button">Faculty</a>
-            <a href="{{ url_for('intern.application_form') }}" class="button">Prospective Intern</a>
             <a href="{{ url_for('coordinator.email_selected_interns') }}" class="button">Coordinator</a>
         </div>
     </div>
