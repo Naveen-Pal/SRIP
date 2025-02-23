@@ -56,6 +56,8 @@ def login_faculty():
         user = Faculty.query.filter_by(email=email).first()
         if user and check_password(user.password, user_pass):
             session_id = str(uuid.uuid4())
+            session['user_type'] = 1
+            session['session_id'] = session_id
             new_session = Session(
                 session_id=session_id,
                 user_id=user.faculty_id,
