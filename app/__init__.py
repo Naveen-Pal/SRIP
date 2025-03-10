@@ -13,8 +13,7 @@ def create_app():
     db.init_app(app)
     # mail.init_app(app)
 
-    from .routes import admin_routes, faculty_routes, intern_routes, auth_routes, home_routes, coordinator_routes
-    app.register_blueprint(admin_routes.bp)
+    from .routes import faculty_routes, intern_routes, auth_routes, home_routes, coordinator_routes
     app.register_blueprint(faculty_routes.bp)
     app.register_blueprint(intern_routes.bp)
     app.register_blueprint(auth_routes.bp)

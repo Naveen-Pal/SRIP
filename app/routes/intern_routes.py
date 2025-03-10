@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app.models.intern import Intern
 from app import db
-from app.utils.auth_utils import login_required
 
 bp = Blueprint('intern', __name__, url_prefix='/intern')
 
@@ -65,3 +64,7 @@ def application_form():
 @bp.route('/projects', methods=['GET', 'POST'])
 def projects():
     return render_template('intern/projects.html')
+
+@bp.route('/home', methods=['POST'])
+def home():
+    return render_template('intern/index.html')
