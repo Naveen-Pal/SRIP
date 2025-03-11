@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for,jsonify
 from app.models.intern import Intern
 from app import db
-from app.utils.auth_utils import login_required
 from app.models.faculty import Faculty
 from app.models import Project 
 
