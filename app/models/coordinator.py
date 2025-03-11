@@ -1,7 +1,7 @@
 from app import db
 
 class Coordinator(db.Model):
-    coordintor_id = db.Column(db.String(50), primary_key=True)
+    coordinator_id = db.Column(db.String(50), primary_key=True)
     email = db.Column(db.String(50), nullable=True)
     password = db.Column(db.String(255), nullable=True)
     full_name = db.Column(db.String(50), nullable=False)

@@ -3,7 +3,8 @@ from app.models.intern import Intern
 from app import db
 from app.utils.auth_utils import login_required
 from app.models.faculty import Faculty
-from app.models import Project  # Import your Project model
+from app.models import Project 
+
 
 bp = Blueprint('intern', __name__, url_prefix='/intern')
 
@@ -65,9 +66,6 @@ def application_form():
     result  = Faculty.query.with_entities(Faculty.faculty_id, Faculty.full_name).filter_by(allowed=1).all()
     faculties = [{"faculty_id": faculty_id, "name": full_name} for faculty_id, full_name in result]
 
-    # for faculty in faculties:
-    #     print(faculty.faculty_id, faculty.full_name)
-    # res = []
     project_title = request.args.get("project_title", "")
     project_code = request.args.get("project_code", "")
     faculty = request.args.get("faculty", "")
@@ -83,7 +81,6 @@ def get_projects():
     if not faculty_id:
         return jsonify({"error": "Missing faculty_id"}), 400
     print(faculty_id)
-    # Fetch projects for the given faculty_id
     projects = Project.query.with_entities(Project.project_id, Project.project_title).filter_by(faculty_id=faculty_id).all()
 
     # Convert to JSON format
@@ -104,3 +101,7 @@ def projects():
     } for p in projects], key=lambda x: x["project_id"])
     
     return render_template('intern/projects.html', projects=project_list)
+
+@bp.route('/home', methods=['POST'])
+def home():
+    return render_template('intern/index.html')

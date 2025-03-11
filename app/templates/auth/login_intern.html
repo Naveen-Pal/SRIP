@@ -5,8 +5,8 @@
 {% block content %}
 <h2>Intern Login</h2>
 <form action="{{ url_for('auth.login_intern') }}" method="post">
-    <label for="user_login">Username:</label>
-    <input type="text" id="user_login" name="user_login" required>
+    <label for="user_mail">Mail:</label>
+    <input type="text" id="user_mail" name="user_mail" required>
     <label for="user_pass">Password:</label>
     <input type="password" id="user_pass" name="user_pass" required>
     <button type="submit">Login</button>
