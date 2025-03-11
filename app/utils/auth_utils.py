@@ -14,8 +14,11 @@ def login_required(user_type):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             session_id = session.get('session_id')
+            print('session id asked : ', session_id)
+            print(verify_session(session_id, user_type))
             if not user_type or not session_id or not verify_session(session_id, user_type):
                 if (user_type == 1):
+                    print(' i am here')
                     return redirect(url_for('auth.login_faculty'))
                 elif (user_type == 2):
                     return redirect(url_for('auth.login_coordinator'))
