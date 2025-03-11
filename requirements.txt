@@ -3,4 +3,3 @@ Flask-SQLAlchemy
 Flask-Mail
 python-dotenv
 pymysql
-gunicorn==20.1.0
