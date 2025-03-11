@@ -183,7 +183,7 @@ textarea {
                         {% endfor %}
                     </select>
                 </div>
-
+              
                 <!-- Project Code Selection -->
                 <div class="form-group">
                     <label for="project_code" class="required">Project Code</label>
@@ -197,7 +197,7 @@ textarea {
                     <label for="project_title" class="required">Project Title</label>
                     <input type="text" name="project_title" id="project_title" readonly>
                 </div>
-
+               
                 <div class="form-group">
                     <label for="full_name" class="required">Full Name</label>
                     <input type="text" name="full_name" id="full_name" required>
@@ -260,17 +260,17 @@ textarea {
 
                 <div class="form-group">
                     <label for="city" class="required">College City</label>
-                    <input type="text" name="city" id="city" required>
+                    <input type="text" name="college_city" id="city" required>
                 </div>
 
                 <div class="form-group">
                     <label for="state" class="required">College State</label>
-                    <input type="text" name="state" id="state" required>
+                    <input type="text" name="college_state" id="state" required>
                 </div>
 
                 <div class="form-group">
                     <label for="country" class="required">College Country</label>
-                    <input type="text" name="country" id="country" required>
+                    <input type="text" name="college_country" id="country" required>
                 </div>
 
                 <div class="form-group">
@@ -331,35 +331,55 @@ textarea {
 
 <script>
     function fetchProjects(facultyId) {
-        // Clear project dropdown and title if no faculty is selected
+        let projectCodeDropdown = document.getElementById("project_code");
+        let projectTitleInput = document.getElementById("project_title");
+    
+        // Clear dropdown and title if no faculty is selected
         if (!facultyId) {
-            document.getElementById("project_code").innerHTML = '<option value="">Select Project Code</option>';
-            document.getElementById("project_title").value = "";
+            console.log("No faculty selected.");
+            projectCodeDropdown.innerHTML = '<option value="">Select Project Code</option>';
+            projectTitleInput.value = "";
             return;
         }
-
+    
         // Fetch projects for the selected faculty
-        fetch(`/get_projects?faculty_id=${facultyId}`)
-            .then(response => response.json())
+        fetch(`/intern/get_projects?faculty_id=${facultyId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                projectCodeDropdown.innerHTML = '<option value="">Select Project Code</option>'; // Reset dropdown
+    
+                if (data.projects.length === 0) {
+                    console.log("No projects found.");
+                    return;
+                }
+    
                 // Populate project code dropdown
-                let projectCodeDropdown = document.getElementById("project_code");
-                projectCodeDropdown.innerHTML = '<option value="">Select Project Code</option>';
                 data.projects.forEach(project => {
                     let option = document.createElement("option");
-                    option.value = project.project_code;
-                    option.text = project.project_code;
-                    option.setAttribute("data-title", project.project_title);
+                    option.value = project.project_id;
+                    option.text = project.project_id;
+                    option.dataset.title = project.project_title; // Store title as dataset attribute
                     projectCodeDropdown.appendChild(option);
                 });
-            });
+            })
+            .catch(error => console.error("Error fetching projects:", error));
     }
-
+    
     function fillProjectTitle(projectCode) {
-        // Auto-fill project title based on selected project code
         let selectedOption = document.querySelector(`#project_code option[value="${projectCode}"]`);
-        document.getElementById("project_title").value = selectedOption ? selectedOption.getAttribute("data-title") : "";
+        document.getElementById("project_title").value = selectedOption?.dataset.title || "";
     }
+    document.addEventListener("DOMContentLoaded", function () {
+        let facultyField = document.getElementById("faculty");
+        if (facultyField && facultyField.value) {
+            fetchProjects(facultyField.value);
+        }});
+    
 </script>
 </body>
 </html>

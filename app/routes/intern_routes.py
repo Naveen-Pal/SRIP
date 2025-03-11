@@ -1,6 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for,jsonify
 from app.models.intern import Intern
 from app import db
+from app.models.faculty import Faculty
+from app.models import Project 
+
 
 bp = Blueprint('intern', __name__, url_prefix='/intern')
 
@@ -59,11 +62,44 @@ def application_form():
         db.session.commit()
         return redirect(url_for('home.home'))
     
-    return render_template('intern/application_form.html')
+    result  = Faculty.query.with_entities(Faculty.faculty_id, Faculty.full_name).filter_by(allowed=1).all()
+    faculties = [{"faculty_id": faculty_id, "name": full_name} for faculty_id, full_name in result]
+
+    project_title = request.args.get("project_title", "")
+    project_code = request.args.get("project_code", "")
+    faculty = request.args.get("faculty", "")
+    print("goint to application form with "+project_code+project_title)
+    return render_template('intern/application_form.html',faculties=faculties,project_title=project_title, 
+                           project_code=project_code, 
+                           faculty=faculty)
+
+@bp.route('/get_projects',methods=['GET'])
+def get_projects():
+    faculty_id = request.args.get('faculty_id')
+
+    if not faculty_id:
+        return jsonify({"error": "Missing faculty_id"}), 400
+    print(faculty_id)
+    projects = Project.query.with_entities(Project.project_id, Project.project_title).filter_by(faculty_id=faculty_id).all()
+
+    # Convert to JSON format
+    project_list = [{"project_id": p.project_id, "project_title": p.project_title} for p in projects]
+    print(project_list)
+    return jsonify({"projects": project_list}), 200
+
 
 @bp.route('/projects', methods=['GET', 'POST'])
 def projects():
-    return render_template('intern/projects.html')
+    projects = Project.query.with_entities(Project.project_id, Project.project_title, Project.project_description, Project.faculty_id).all()
+
+    project_list = sorted([{
+        "project_id": p.project_id, 
+        "project_title": p.project_title,
+        "project_description": p.project_description,
+        "faculty_id": p.faculty_id
+    } for p in projects], key=lambda x: x["project_id"])
+    
+    return render_template('intern/projects.html', projects=project_list)
 
 @bp.route('/home', methods=['POST'])
 def home():
