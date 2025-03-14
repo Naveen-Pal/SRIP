@@ -15,3 +15,12 @@ This is the SRIP Portal project developed using Flask. It provides facilities fo
 
 1. Install the required packages using `pip install -r requirements.txt`.
 2. Run the application using `python run.py`.
+
+
+Additional
+(store in cluster)
+```bash
+kubectl create secret generic srip-secrets \
+  --from-literal=database-url=mysql://user:pass@db-host:3306/srip \
+  --from-literal=secret-key=your-secret-key
+```

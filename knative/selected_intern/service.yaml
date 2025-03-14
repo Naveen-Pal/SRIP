@@ -1,0 +1,20 @@
+# knative/selected_intern/service.yaml
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: selected_intern-service
+spec:
+  template:
+    spec:
+      containers:
+        - image: ghcr.io/your-org/srip-selected_intern:latest
+          env:
+            - name: FLASK_ENV
+              value: "production"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: srip-secrets
+                  key: database-url
+          ports:
+            - containerPort: 5000

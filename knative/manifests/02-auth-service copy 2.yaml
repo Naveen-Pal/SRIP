@@ -1,0 +1,18 @@
+# manifests/02-auth-service.yaml
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containers:
+        - image: docker.io/naveen-pal/auth-service:latest
+          envFrom:
+            - secretRef:
+                name: srip-secrets
+          ports:
+            - containerPort: 5000

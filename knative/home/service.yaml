@@ -1,0 +1,20 @@
+# knative/home/service.yaml
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: home-service
+spec:
+  template:
+    spec:
+      containers:
+        - image: ghcr.io/your-org/srip-home:latest
+          env:
+            - name: FLASK_ENV
+              value: "production"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: srip-secrets
+                  key: database-url
+          ports:
+            - containerPort: 5000
