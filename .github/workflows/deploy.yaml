@@ -1,23 +1,25 @@
-# .github/workflows/deploy.yml
-name: Deploy to Knative
+name: Build and Push Docker Images
 
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'knative/**'
+      - 'app/**'
+      - '.github/workflows/*.yml'
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ${{ github.repository }}
+  IMAGE_PREFIX: srip
 
 jobs:
-  build-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: ['auth', 'home', 'coordinator', 'faculty', 'prospective_intern', 'selected_intern']
-    
+        service: ['auth', 'coordinator', 'faculty', 'home', 'propective_intern', 'selected_intern']
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v4
 
     - name: Set up Docker Buildx
@@ -34,17 +36,10 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
-        file: ./Dockerfile.${{ matrix.service }}
+        file: ./knative/${{ matrix.service }}/dockerfile
         tags: |
-          ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}:latest
-          ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}:${{ github.sha }}
+          ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}:latest
+          ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}:${{ github.sha }}
         push: true
-
-    - name: Deploy to Knative
-      uses: azure/k8s-deploy@v4
-      with:
-        namespace: srip-prod
-        manifests: |
-          knative/${{ matrix.service }}/service.yaml
-        images: |
-          ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}:${{ github.sha }}
+        build-args: |
+          SERVICE_NAME=${{ matrix.service }}
