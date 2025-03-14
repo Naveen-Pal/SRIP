@@ -38,8 +38,8 @@ jobs:
         context: .
         file: ./knative/${{ matrix.service }}/dockerfile
         tags: |
-          ${{ env.REGISTRY }}/${{ github.repository_owner | lower }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}:latest
-          ${{ env.REGISTRY }}/${{ github.repository_owner | lower }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}:${{ github.sha }}
+          ${{ env.REGISTRY }}/${{ github.repository_owner }}/srip-${{ matrix.service }}:latest
+          ${{ env.REGISTRY }}/${{ github.repository_owner }}/srip-${{ matrix.service }}:${{ github.sha }}
         push: true
         build-args: |
           SERVICE_NAME=${{ matrix.service }}
