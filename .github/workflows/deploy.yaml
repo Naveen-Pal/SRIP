@@ -6,7 +6,7 @@ on:
     paths:
       - 'knative/**'
       - 'app/**'
-      - '.github/workflows/*.yml'
+      - '.github/workflows/*.yaml'
 
 env:
   REGISTRY: ghcr.io
