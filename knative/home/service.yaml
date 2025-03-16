@@ -1,20 +1,17 @@
-# knative/home/service.yaml
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: home-service
+  name: srip-auth
 spec:
   template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
     spec:
       containers:
-        - image: ghcr.io/your-org/srip-home:latest
-          env:
-            - name: FLASK_ENV
-              value: "production"
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: srip-secrets
-                  key: database-url
+        - image: ghcr.io/naveen-pal/srip-auth:latest
+          envFrom:
+            - secretRef:
+                name: srip-secrets
           ports:
             - containerPort: 5000

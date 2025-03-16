@@ -1,0 +1,33 @@
+apiVersion: networking.knative.dev/v1
+kind: Ingress
+metadata:
+  name: srip-ingress
+spec:
+  rules:
+    - hosts: ["srip.iitgn.ac.in"]
+      http:
+        paths:
+          - path: /
+            splits:
+              - serviceName: srip-home
+                percent: 100
+          - path: /auth
+            splits:
+              - serviceName: srip-auth
+                percent: 100
+          - path: /coordinator
+            splits:
+              - serviceName: srip-coordinator
+                percent: 100
+          - path: /faculty
+            splits:
+              - serviceName: srip-faculty
+                percent: 100
+          - path: /prospective_student
+            splits:
+              - serviceName: srip-prospective_student
+                percent: 100
+          - path: /selected_student
+            splits:
+              - serviceName: srip-selected_student
+                percent: 100
