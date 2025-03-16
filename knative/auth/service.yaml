@@ -15,3 +15,5 @@ spec:
                 name: srip-secrets
           ports:
             - containerPort: 5000
+      imagePullSecrets:
+        - name: ghcr-secret 

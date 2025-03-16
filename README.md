@@ -24,3 +24,10 @@ kubectl create secret generic srip-secrets \
   --from-literal=database-url=mysql://user:pass@db-host:3306/srip \
   --from-literal=secret-key=your-secret-key
 ```
+
+```bash
+kubectl create secret docker-registry ghcr-secret \
+  --docker-server=ghcr.io \
+  --docker-username=your-github-username \
+  --docker-password=ghp_yourPATtoken
+```

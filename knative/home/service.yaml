@@ -1,7 +1,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: srip-auth
+  name: srip-home
 spec:
   template:
     metadata:
@@ -9,9 +9,11 @@ spec:
         autoscaling.knative.dev/minScale: "1"
     spec:
       containers:
-        - image: ghcr.io/naveen-pal/srip-auth:latest
+        - image: ghcr.io/naveen-pal/srip-home:latest
           envFrom:
             - secretRef:
                 name: srip-secrets
           ports:
             - containerPort: 5000
+      imagePullSecrets:
+        - name: ghcr-secret 
