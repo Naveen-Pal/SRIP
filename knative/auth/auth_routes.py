@@ -55,7 +55,6 @@ def login_faculty():
         email = request.form['email']
         user_pass = request.form['user_pass']
         user = Faculty.query.filter_by(email=email).first()
-        print("******",user,"********")
         if user and check_password(user.password, user_pass):
             session_id = str(uuid.uuid4())
             session['user_type'] = 1

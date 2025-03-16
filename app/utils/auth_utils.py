@@ -16,13 +16,13 @@ def login_required(user_type):
             session_id = session.get('session_id')
             if not user_type or not session_id or not verify_session(session_id, user_type):
                 if (user_type == 1):
-                    return redirect(url_for('auth.login_faculty'))
+                    return redirect('/auth/faculty')
                 elif (user_type == 2):
-                    return redirect(url_for('auth.login_coordinator'))
+                    return redirect('/auth/coordinator')
                 elif (user_type == 0):
-                    return redirect(url_for('auth.intern_login'))
+                    return redirect('/auth/intern')
                 else:
-                    return redirect(url_for('home.home'))
+                    return redirect('/')
             return f(*args, **kwargs)
         return decorated_function
     return decorator
