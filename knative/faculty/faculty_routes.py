@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from app.utils.auth_utils import login_required
+from utils.auth_utils import login_required
 
 bp = Blueprint('faculty', __name__, url_prefix='/faculty')
 

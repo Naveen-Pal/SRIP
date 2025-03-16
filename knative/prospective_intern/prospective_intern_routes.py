@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for,jsonify
-from app.models.intern import Intern
+from models.intern import Intern
+from models.faculty import Faculty
+from models.project import Project
 from app import db
-from app.models.faculty import Faculty
-from app.models import Project
 
-bp = Blueprint('prospective_intern', __name__, url_prefix='/intern')
+bp = Blueprint('prospective_intern', __name__, url_prefix='/prospective_intern')
 
 @bp.route('/application_form', methods=['GET', 'POST'])
 def application_form():
@@ -73,17 +73,17 @@ def application_form():
 
 @bp.route('/get_projects',methods=['GET'])
 def get_projects():
-    print("yes")
+    # print("yes")
     faculty_id = request.args.get('faculty_id')
 
     if not faculty_id:
         return jsonify({"error": "Missing faculty_id"}), 400
-    print(faculty_id)
+    # print(faculty_id)
     projects = Project.query.with_entities(Project.project_id, Project.project_title).filter_by(faculty_id=faculty_id).all()
 
     # Convert to JSON format
     project_list = [{"project_id": p.project_id, "project_title": p.project_title} for p in projects]
-    print(project_list)
+    # print(project_list)
     return jsonify({"projects": project_list}), 200
 
 

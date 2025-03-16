@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: ['auth', 'coordinator', 'faculty', 'home', 'propective_intern', 'selected_intern']
+        service: ['auth', 'coordinator', 'faculty', 'home', 'prospective_intern', 'selected_intern']
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
