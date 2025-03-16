@@ -5,7 +5,7 @@
 {% block content %}
 <h2>Faculty to be approved</h2>
 
-<form method="get" action="{{ url_for('coordinator.faculty_approvement') }}">
+<form method="get" action="/coordinator/faculty_approvement">
     <label for="filter">Filter:</label>
     <select id="filter" name="filter" onchange="this.form.submit()">
         <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Faculty</option>

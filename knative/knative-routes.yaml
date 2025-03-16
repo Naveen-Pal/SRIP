@@ -1,10 +1,12 @@
+# knative/knative-routes.yaml
 apiVersion: networking.knative.dev/v1
 kind: Ingress
 metadata:
   name: srip-ingress
 spec:
   rules:
-    - hosts: ["srip.iitgn.ac.in"]
+    - hosts:
+        - srip.example.com
       http:
         paths:
           - path: /
@@ -23,11 +25,11 @@ spec:
             splits:
               - serviceName: srip-faculty
                 percent: 100
-          - path: /prospective_student
+          - path: /selected_intern
             splits:
-              - serviceName: srip-prospective_student
+              - serviceName: srip-selected-intern
                 percent: 100
-          - path: /selected_student
+          - path: /prospective_intern
             splits:
-              - serviceName: srip-selected_student
+              - serviceName: srip-prospective-intern
                 percent: 100

@@ -161,13 +161,10 @@ textarea {
 </head>
 <body>
     <!-- Navbar: Heading Only -->
-    <header class="header">
-        <div class="logo">
-            <img src="../static/srip-log.png" alt="SRIP Logo">
-        </div>
-        <h1>SRIP Internship Application 2025</h1>
-        
-    </header>
+
+    {% extends "base.html" %}
+
+    {% block content %}
 
     <div class="container">
         <h1 class="form-title">Project Details</h1>
@@ -175,28 +172,54 @@ textarea {
             <!-- action="{{ url_for('prospective_intern.application_form') }}" -->
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="faculty" class="required">Faculty</label>
+                    <label for="project_id" class="required"></label>
                     <select name="faculty" id="faculty" required onchange="fetchProjects(this.value)">
                         <option value="">Select Faculty</option>
+                        {% for faculty in faculties %}
+                        <option value="{{ faculty.faculty_id }}" 
+                            {% if faculty.faculty_id == faculty_id %} selected {% endif %}>
+                            {{ faculty.name }}
+                        </option>
+                        {% endfor %}
+                    </select>                    
+                </div>    
+                 <div class="form-group">
+                    <label for="project_code" class="required">Project Code</label>
+                    <select name="project_code" id="project_code" required onchange="fillProjectTitle(this.value)">
+                        {% if project_id %}
+                        <option value="{{ project_id }}" selected>{{ project_id }}</option>
+                    {% else %}
+                        <option value="">Select Project Code</option>
+                    {% endif %}                
+                    </select>                    
+                </div>
+                 <div class="form-group">
+                    <label for="project_title" class="required">Project Title</label>
+                    <input type="text" name="project_title" id="project_title" readonly>
+                </div>
+                <!-- <div class="form-group">
+                    <label for="faculty" class="required">Faculty</label>
+                    <select name="faculty" id="faculty" required onchange="fetchProjects(this.value)">
+                        <option value="{{faculty_name}}">Select Faculty</option>
                         {% for faculty in faculties %}
                         <option value="{{ faculty.faculty_id }}">{{ faculty.name }}</option>
                         {% endfor %}
                     </select>
-                </div>
+                </div> -->
               
                 <!-- Project Code Selection -->
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label for="project_code" class="required">Project Code</label>
                     <select name="project_code" id="project_code" required onchange="fillProjectTitle(this.value)">
                         <option value="">Select Project Code</option>
                     </select>
-                </div>
+                </div> -->
                 
                 <!-- Project Title Autofill -->
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label for="project_title" class="required">Project Title</label>
                     <input type="text" name="project_title" id="project_title" readonly>
-                </div>
+                </div> -->
                
                 <div class="form-group">
                     <label for="full_name" class="required">Full Name</label>
@@ -381,5 +404,7 @@ textarea {
         }});
     
 </script>
+{% endblock %}
+
 </body>
 </html>

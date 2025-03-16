@@ -5,12 +5,6 @@
 
 ## Deployment Steps
 
-1. Build and push Docker images:
 ```bash
-export DOCKER_USER=naveen-pal
-SERVICES=(auth coordinator faculty intern home)
-
-for service in "${SERVICES[@]}"; do
-  docker build -t $DOCKER_USER/$service-service -f services/$service/Dockerfile .
-  docker push $DOCKER_USER/$service-service
-done
+kubectl get svc -n istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+```
