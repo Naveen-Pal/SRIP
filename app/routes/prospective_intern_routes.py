@@ -2,10 +2,9 @@ from flask import Blueprint, render_template, request, redirect, url_for,jsonify
 from app.models.intern import Intern
 from app import db
 from app.models.faculty import Faculty
-from app.models import Project 
+from app.models import Project
 
-
-bp = Blueprint('intern', __name__, url_prefix='/intern')
+bp = Blueprint('prospective_intern', __name__, url_prefix='/intern')
 
 @bp.route('/application_form', methods=['GET', 'POST'])
 def application_form():
@@ -68,13 +67,13 @@ def application_form():
     project_title = request.args.get("project_title", "")
     project_code = request.args.get("project_code", "")
     faculty = request.args.get("faculty", "")
-    print("goint to application form with "+project_code+project_title)
     return render_template('intern/application_form.html',faculties=faculties,project_title=project_title, 
                            project_code=project_code, 
                            faculty=faculty)
 
 @bp.route('/get_projects',methods=['GET'])
 def get_projects():
+    print("yes")
     faculty_id = request.args.get('faculty_id')
 
     if not faculty_id:
@@ -100,7 +99,3 @@ def projects():
     } for p in projects], key=lambda x: x["project_id"])
     
     return render_template('intern/projects.html', projects=project_list)
-
-@bp.route('/home', methods=['POST'])
-def home():
-    return render_template('intern/index.html')
