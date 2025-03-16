@@ -64,12 +64,7 @@ def application_form():
     result  = Faculty.query.with_entities(Faculty.faculty_id, Faculty.full_name).filter_by(allowed=1).all()
     faculties = [{"faculty_id": faculty_id, "name": full_name} for faculty_id, full_name in result]
 
-    project_title = request.args.get("project_title", "")
-    project_code = request.args.get("project_code", "")
-    faculty = request.args.get("faculty", "")
-    return render_template('intern/application_form.html',faculties=faculties,project_title=project_title, 
-                           project_code=project_code, 
-                           faculty=faculty)
+    return render_template('intern/application_form.html',faculties=faculties)
 
 @bp.route('/get_projects',methods=['GET'])
 def get_projects():
@@ -99,3 +94,16 @@ def projects():
     } for p in projects], key=lambda x: x["project_id"])
     
     return render_template('intern/projects.html', projects=project_list)
+
+@bp.route('/<int:project_id>', methods=['GET', 'POST'])
+def direct_apply(project_id):
+    # project_id = request.view_args['id']
+    # print(project_id)
+    project = Project.query.get(project_id)
+    print(project.faculty_id)
+    faculty_name = Faculty.query.get(project.faculty_id).full_name
+    project_title = project.project_title
+    print(faculty_name)
+    result  = Faculty.query.with_entities(Faculty.faculty_id, Faculty.full_name).filter_by(allowed=1).all()
+    faculties = [{"faculty_id": faculty_id, "name": full_name} for faculty_id, full_name in result]
+    return render_template('intern/application_form.html',faculty_id=project.faculty_id, faculty_name=faculty_name, project_title=project_title,project_id=project_id, faculties=faculties)
