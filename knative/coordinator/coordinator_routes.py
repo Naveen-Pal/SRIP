@@ -33,7 +33,7 @@ def faculty_approvement():
             elif action == 'delete':
                 db.session.delete(faculty)
                 db.session.commit()
-            return redirect(url_for('coordinator.faculty_approvement'))
+            return redirect('/coordinator/faculty_approvement')
         
         filter_type = request.args.get('filter', 'all')
         if filter_type == 'allowed':

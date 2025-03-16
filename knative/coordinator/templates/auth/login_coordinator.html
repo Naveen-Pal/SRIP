@@ -6,7 +6,7 @@
 <div class="card">
     <div class="card-body">
         <h2 class="card-title">Coordinator Login</h2>
-        <form action="{{ url_for('auth.login_coordinator') }}" method="post">
+        <form action="/auth/coordinator" method="post">
             <div class="form-group">
                 <label for="user_login">Username:</label>
                 <input type="text" class="form-control" id="user_login" name="user_login" required>
