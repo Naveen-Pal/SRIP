@@ -25,7 +25,7 @@ def register():
             
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('home.home'))
+        return redirect('/')
     return render_template('auth/register.html')
 
 @bp.route('/intern', methods=['GET', 'POST'])
@@ -66,8 +66,7 @@ def login_faculty():
             )
             db.session.add(new_session)
             db.session.commit()
-            return render_template('faculty/add_project.html')
-        return redirect(url_for('home.home'))
+            return redirect('faculty/add_project')
     return render_template('auth/login_faculty.html')
 
 @bp.route('/coordinator', methods=['GET', 'POST'])
@@ -88,11 +87,10 @@ def login_coordinator():
             )
             db.session.add(new_session)
             db.session.commit()
-            return render_template('coordinator/faculty_approvement.html')
-        return redirect(url_for('home.home'))
+            return redirect('coordinator/faculty_approvement')
     return render_template('auth/login_coordinator.html')
 
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('home.home'))
+    return redirect('/')

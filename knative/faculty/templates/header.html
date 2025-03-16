@@ -11,13 +11,13 @@
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('intern.submit_report') }}">Submit Report</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('intern.application_form') }}">Application Form</a></li>
                     {% elif session.get('user_type') == 1 %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('faculty.add_project') }}">Add Project</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/faculty/add_project">Add Project</a></li>
                         {% elif session.get('user_type') == 2 %}
                         {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/auth/register">Register</a></li>
                         {% endif %}
                         {% if session.get('user_id') %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/auth/logout">Logout</a></li>
                     {% endif %}
                 </ul>
             </div>
