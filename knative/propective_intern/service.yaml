@@ -1,19 +1,19 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: srip-selected-intern
+  name: srip-prospective-intern
   annotations:
     networking.knative.dev/ingress.class: istio.ingress.networking.knative.dev
 spec:
   template:
     metadata:
       labels:
-        app: selected_intern
+        app: prospective_intern
       annotations:
         autoscaling.knative.dev/minScale: "1"
     spec:
       containers:
-        - image: ghcr.io/naveen-pal/srip-selected_intern:latest
+        - image: ghcr.io/naveen-pal/srip-prospective_intern:latest
           envFrom:
             - secretRef:
                 name: srip-secrets

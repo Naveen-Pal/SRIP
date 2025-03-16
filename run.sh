@@ -1,15 +1,12 @@
 #!/bin/bash
 
 # apply_knative.sh
-# Applies all Knative YAML configurations in sequence
+# Applies or deletes all Knative YAML configurations
 
-# Global configurations (apply first)
+# Configuration files
 GLOBAL_FILES=(
     "knative/srip-secrets.yaml"
-    # "knative/configmap.yaml"
 )
-
-# Service configurations (alphabetical order)
 SERVICE_DIRS=(
     "auth"
     "coordinator" 
@@ -18,42 +15,90 @@ SERVICE_DIRS=(
     "prospective_intern"
     "selected_intern"
 )
-
-# Cluster-wide configurations (apply last)
 CLUSTER_FILES=(
     "knative/knative-routes.yaml"
+    "knative/config-domain.yaml"
 )
 
-echo "=== Applying global configurations ==="
-for file in "${GLOBAL_FILES[@]}"; do
-    if [ -f "$file" ]; then
-        echo "Applying $file"
-        kubectl apply -f "$file"
-    else
-        echo "Warning: Missing $file"
-    fi
-done
+apply_resources() {
+    echo "=== Applying global configurations ==="
+    for file in "${GLOBAL_FILES[@]}"; do
+        if [ -f "$file" ]; then
+            echo "Applying $file"
+            kubectl apply -f "$file"
+        else
+            echo "Warning: Missing $file"
+        fi
+    done
 
-echo -e "\n=== Applying service configurations ==="
-for service in "${SERVICE_DIRS[@]}"; do
-    service_file="knative/${service}/service.yaml"
-    if [ -f "$service_file" ]; then
-        echo "Applying $service_file"
-        kubectl apply -f "$service_file"
-    else
-        echo "Warning: Missing $service_file"
-    fi
-done
+    echo -e "\n=== Applying service configurations ==="
+    for service in "${SERVICE_DIRS[@]}"; do
+        service_file="knative/${service}/service.yaml"
+        if [ -f "$service_file" ]; then
+            echo "Applying $service_file"
+            kubectl apply -f "$service_file"
+        else
+            echo "Warning: Missing $service_file"
+        fi
+    done
 
-echo -e "\n=== Applying cluster configurations ==="
-for file in "${CLUSTER_FILES[@]}"; do
-    if [ -f "$file" ]; then
-        echo "Applying $file"
-        kubectl apply -f "$file"
-    else
-        echo "Warning: Missing $file"
-    fi
-done
+    echo -e "\n=== Applying cluster configurations ==="
+    for file in "${CLUSTER_FILES[@]}"; do
+        if [ -f "$file" ]; then
+            echo "Applying $file"
+            kubectl apply -f "$file"
+        else
+            echo "Warning: Missing $file"
+        fi
+    done
 
-echo -e "\n=== Deployment status ==="
-kubectl get ksvc -o wide
+    echo -e "\n=== Deployment status ==="
+    kubectl get ksvc -o wide
+}
+
+delete_resources() {
+    echo "=== Deleting cluster configurations ==="
+    for file in "${CLUSTER_FILES[@]}"; do
+        if [ -f "$file" ]; then
+            echo "Deleting $file"
+            kubectl delete -f "$file"
+        fi
+    done
+
+    echo -e "\n=== Deleting service configurations ==="
+    for service in "${SERVICE_DIRS[@]}"; do
+        service_file="knative/${service}/service.yaml"
+        if [ -f "$service_file" ]; then
+            echo "Deleting $service_file"
+            kubectl delete -f "$service_file"
+        fi
+    done
+
+    echo -e "\n=== Deleting global configurations ==="
+    for file in "${GLOBAL_FILES[@]}"; do
+        if [ -f "$file" ]; then
+            echo "Deleting $file"
+            kubectl delete -f "$file"
+        fi
+    done
+
+    echo -e "\n=== Remaining services ==="
+    kubectl get ksvc -o wide
+}
+
+case "$1" in
+    --delete|-d)
+        delete_resources
+        ;;
+    --help|-h)
+        echo "Usage: $0 [OPTION]"
+        echo "Apply or delete Knative configurations"
+        echo -e "\nOptions:"
+        echo "  (no option)     Apply configurations"
+        echo "  -d, --delete    Delete configurations"
+        echo "  -h, --help      Show this help"
+        ;;
+    *)
+        apply_resources
+        ;;
+esac
