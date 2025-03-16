@@ -88,8 +88,9 @@ def login_coordinator():
             )
             db.session.add(new_session)
             db.session.commit()
-            return redirect(url_for('home.home'))
-    return render_template('coordinator/faculty_approvement.html')
+            return render_template('coordinator/faculty_approvement.html')
+        return redirect(url_for('home.home'))
+    return render_template('auth/login_coordinator.html')
 
 @bp.route('/logout')
 def logout():

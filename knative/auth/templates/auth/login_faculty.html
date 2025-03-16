@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Faculty Login{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">Faculty Login</h2>
+        <form action="{{ url_for('auth.login_faculty') }}" method="post">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="user_pass">Password:</label>
+                <input type="password" class="form-control" id="user_pass" name="user_pass" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% include "header.html" %}
+
+{% block title %}Add Faculty{% endblock %}
+
+{% block content %}
+<h2>Add Faculty</h2>
+<form action="" method="post">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    <label for="full_name">Full Name:</label>
+    <input type="text" id="full_name" name="full_name" required>
+    <label for="discipline">Discipline:</label>
+    <input type="text" id="discipline" name="discipline" required>
+    <button type="submit">Add Faculty</button>
+</form>
+
+{% include "footer.html" %}
+{% endblock %}

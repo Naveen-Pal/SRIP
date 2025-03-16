@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Intern Application Form{% endblock %}
+
+{% block content %}
+<h2>Projects</h2>
+
+<!-- Search bar -->
+<input type="text" id="search" onkeyup="searchProjects()" placeholder="Search by title or faculty..." style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 16px;">
+
+<!-- Projects Table -->
+<table id="projects-table" style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr style="background-color: #add8e6; color: black;">
+            <th style="padding: 10px; border: 1px solid #ddd;">Project ID</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Title</th>
+            <th style="padding: 10px; border: 1px solid #ddd; width: 40%;">Description</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Faculty</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Apply</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for project in projects|sort(attribute='project_id') %}
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd;">{{ project.project_id }}</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">{{ project.project_title }}</td>
+            <td style="padding: 10px; border: 1px solid #ddd; width: 40%;">{{ project.project_description }}</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">{{ project.faculty_id }}</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">
+                <a href="/prospective_intern/application_form?faculty=p1"
+                style="text-decoration: none; background-color: #007bff; color: white; padding: 5px 10px; border-radius: 5px;">
+                Apply
+             </a>
+             
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    function searchProjects() {
+        let input = document.getElementById("search").value.toLowerCase();
+        let rows = document.querySelectorAll("#projects-table tbody tr");
+
+        rows.forEach(row => {
+            let title = row.cells[1].textContent.toLowerCase();
+            let faculty = row.cells[3].textContent.toLowerCase();
+            if (title.includes(input) || faculty.includes(input)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+</script>
+
+{% endblock %}
