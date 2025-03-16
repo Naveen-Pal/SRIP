@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template
 from utils.auth_utils import login_required
 
-bp = Blueprint('faculty', __name__, url_prefix='/faculty')
+bp = Blueprint('faculty', __name__)
 
 @bp.route('/add_project')
 @login_required(1)
