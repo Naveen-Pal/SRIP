@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: srip-auth
   annotations:
-    networking.knative.dev/ingress.class: istio.ingress.networking.knative.dev
+    networking.knative.dev/ingress.class: kourier.ingress.networking.knative.dev
 spec:
   template:
     metadata:
@@ -18,6 +18,6 @@ spec:
             - secretRef:
                 name: srip-secrets
           ports:
-            - containerPort: 5000
+            - containerPort: 5000 
       imagePullSecrets:
         - name: ghcr-secret 

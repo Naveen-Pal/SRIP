@@ -2,9 +2,13 @@ apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
   name: srip-prospective-intern
+  annotations:
+    networking.knative.dev/ingress.class: kourier.ingress.networking.knative.dev
 spec:
   template:
     metadata:
+      labels:
+        app: prospective_intern
       annotations:
         autoscaling.knative.dev/minScale: "1"
     spec:
@@ -16,4 +20,4 @@ spec:
           ports:
             - containerPort: 5000
       imagePullSecrets:
-        - name: ghcr-secret
+        - name: ghcr-secret 

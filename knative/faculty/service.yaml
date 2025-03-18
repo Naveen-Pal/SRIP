@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: srip-faculty
   annotations:
-    networking.knative.dev/ingress.class: istio.ingress.networking.knative.dev
+    networking.knative.dev/ingress.class: kourier.ingress.networking.knative.dev
 spec:
   template:
     metadata:

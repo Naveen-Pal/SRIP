@@ -1,5 +1,4 @@
-# knative/knative-routes.yaml
-apiVersion: networking.knative.dev/v1
+apiVersion: networking.knative.dev/v1alpha1
 kind: Ingress
 metadata:
   name: srip-ingress
@@ -11,25 +10,37 @@ spec:
         paths:
           - path: /
             splits:
-              - serviceName: srip-home
-                percent: 100
+              - percent: 100
+                serviceName: srip-home
+                serviceNamespace: default
+                servicePort: 80
           - path: /auth
             splits:
-              - serviceName: srip-auth
-                percent: 100
+              - percent: 100
+                serviceName: srip-auth
+                serviceNamespace: default
+                servicePort: 80
           - path: /coordinator
             splits:
-              - serviceName: srip-coordinator
-                percent: 100
+              - percent: 100
+                serviceName: srip-coordinator
+                serviceNamespace: default
+                servicePort: 80
           - path: /faculty
             splits:
-              - serviceName: srip-faculty
-                percent: 100
+              - percent: 100
+                serviceName: srip-faculty
+                serviceNamespace: default
+                servicePort: 80
           - path: /selected_intern
             splits:
-              - serviceName: srip-selected-intern
-                percent: 100
+              - percent: 100
+                serviceName: srip-selected-intern
+                serviceNamespace: default
+                servicePort: 80
           - path: /prospective_intern
             splits:
-              - serviceName: srip-prospective-intern
-                percent: 100
+              - percent: 100
+                serviceName: srip-prospective-intern
+                serviceNamespace: default
+                servicePort: 80
