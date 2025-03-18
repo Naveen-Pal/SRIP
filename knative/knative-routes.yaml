@@ -15,34 +15,34 @@ spec:
               - percent: 100
                 serviceName: srip-home
                 serviceNamespace: default
-                servicePort: 80
+                servicePort: 5000
           - path: /auth
             splits:
               - percent: 100
                 serviceName: srip-auth
                 serviceNamespace: default
-                servicePort: 80
+                servicePort: 5000
           - path: /coordinator
             splits:
               - percent: 100
                 serviceName: srip-coordinator
                 serviceNamespace: default
-                servicePort: 80
+                servicePort: 5000
           - path: /faculty
             splits:
               - percent: 100
                 serviceName: srip-faculty
                 serviceNamespace: default
-                servicePort: 80
+                servicePort: 5000
           - path: /selected_intern
             splits:
               - percent: 100
                 serviceName: srip-selected-intern
                 serviceNamespace: default
-                servicePort: 80
+                servicePort: 5000
           - path: /prospective_intern
             splits:
               - percent: 100
                 serviceName: srip-prospective-intern
                 serviceNamespace: default
-                servicePort: 80
+                servicePort: 5000
