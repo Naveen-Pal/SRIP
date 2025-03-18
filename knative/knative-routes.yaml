@@ -1,7 +1,9 @@
-apiVersion: networking.knative.dev/v1alpha1
+# knative/knative-routes.yaml
+apiVersion: networking.internal.knative.dev/v1alpha1
 kind: Ingress
 metadata:
   name: srip-ingress
+  namespace: default
 spec:
   rules:
     - hosts:
