@@ -3,7 +3,6 @@ kind: Service
 metadata:
   name: srip-prospective-intern
   annotations:
-    networking.knative.dev/ingress.class: kourier.ingress.networking.knative.dev
 spec:
   template:
     metadata:

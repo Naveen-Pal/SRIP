@@ -4,7 +4,7 @@ from models.faculty import Faculty
 from models.project import Project
 from app import db
 
-bp = Blueprint('prospective_intern', __name__)
+bp = Blueprint('prospective_intern', __name__, url_prefix="/prospective_intern")
 
 @bp.route('/application_form', methods=['GET', 'POST'])
 def application_form():

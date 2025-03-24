@@ -5,4 +5,4 @@ metadata:
   name: config-domain
   namespace: knative-serving
 data:
-  srip.example.com: ""
+  srip.in: ""

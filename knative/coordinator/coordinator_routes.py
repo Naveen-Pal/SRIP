@@ -3,7 +3,7 @@ from utils.auth_utils import login_required
 from models.faculty import Faculty
 from app import db
 
-bp = Blueprint('coordinator', __name__)
+bp = Blueprint('coordinator', __name__, url_prefix="/coordinator")
 
 @bp.route('/email_selected_interns')
 @login_required(2)

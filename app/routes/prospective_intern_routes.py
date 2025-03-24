@@ -64,21 +64,23 @@ def application_form():
     result  = Faculty.query.with_entities(Faculty.faculty_id, Faculty.full_name).filter_by(allowed=1).all()
     faculties = [{"faculty_id": faculty_id, "name": full_name} for faculty_id, full_name in result]
 
-    return render_template('intern/application_form.html',faculties=faculties)
+    project_title = request.args.get("project_title", "")
+    project_code = request.args.get("project_code", "")
+    faculty = request.args.get("faculty", "")
+    return render_template('intern/application_form.html',faculties=faculties,project_title=project_title, 
+                           project_code=project_code, 
+                           faculty=faculty)
 
 @bp.route('/get_projects',methods=['GET'])
 def get_projects():
-    print("yes")
     faculty_id = request.args.get('faculty_id')
 
     if not faculty_id:
         return jsonify({"error": "Missing faculty_id"}), 400
-    print(faculty_id)
     projects = Project.query.with_entities(Project.project_id, Project.project_title).filter_by(faculty_id=faculty_id).all()
 
     # Convert to JSON format
     project_list = [{"project_id": p.project_id, "project_title": p.project_title} for p in projects]
-    print(project_list)
     return jsonify({"projects": project_list}), 200
 
 

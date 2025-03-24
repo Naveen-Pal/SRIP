@@ -7,7 +7,7 @@ from models.session import Session
 from app import db
 import uuid
 
-bp = Blueprint('auth', __name__)
+bp = Blueprint('auth', __name__, url_prefix="/auth")
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():

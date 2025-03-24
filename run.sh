@@ -16,8 +16,8 @@ SERVICE_DIRS=(
     "selected_intern"
 )
 CLUSTER_FILES=(
-    "knative/knative-routes.yaml"
-    "knative/config-domain.yaml"
+    # "knative/routes.yaml"
+    # "knative/config-domain.yaml"
 )
 
 apply_resources() {

@@ -1,0 +1,101 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: custom-routing
+spec:
+  hosts:
+    - "srip.in"
+  gateways:
+    - knative-ingress-gateway.knative-serving.svc.cluster.local
+  http:
+    - match:
+        - uri:
+            prefix: "/auth"
+      rewrite:
+        authority: srip-auth.default.svc.cluster.local
+      route:
+        - destination:
+            host: istio-ingressgateway.istio-system.svc.cluster.local
+            port:
+              number: 80
+          weight: 100
+    - match:
+        - uri:
+            prefix: "/selected_intern"
+      rewrite:
+        authority: srip-selected-intern.default.svc.cluster.local
+      # route:
+      #   - destination:
+      #       host: srip-selected-intern.default.svc.cluster.local
+      #       port:
+      #         number: 80
+      route:
+        - destination:
+            host: istio-ingressgateway.istio-system.svc.cluster.local
+            port:
+              number: 80
+          weight: 100
+    - match:
+        - uri:
+            prefix: "/coordinator"
+      # route:
+      #   - destination:
+      #       host: srip-coordinator.default.svc.cluster.local
+      #       port:
+      #         number: 80
+      rewrite:
+        authority: srip-coordinator.default.svc.cluster.local
+      route:
+        - destination:
+            host: istio-ingressgateway.istio-system.svc.cluster.local
+            port:
+              number: 80
+          weight: 100    
+    - match:
+        - uri:
+            prefix: "/prospective_intern"
+      rewrite:
+        authority: srip-prospective-intern.default.svc.cluster.local
+      # route:
+      #   - destination:
+      #       host: srip-prospective-intern.default.svc.cluster.local
+      #       port:
+      #         number: 80
+      route:
+        - destination:
+            host: istio-ingressgateway.istio-system.svc.cluster.local
+            port:
+              number: 80
+          weight: 100
+    - match:
+        - uri:
+            prefix: "/faculty"
+      rewrite:
+        authority: srip-faculty.default.svc.cluster.local
+      # route:
+      #   - destination:
+      #       host: srip-faculty.default.svc.cluster.local
+      #       port:
+      #         number: 80
+      route:
+        - destination:
+            host: istio-ingressgateway.istio-system.svc.cluster.local
+            port:
+              number: 80
+          weight: 100
+    - match:
+        - uri:
+            prefix: "/"
+      rewrite:
+        authority: srip-home.default.svc.cluster.local
+      # route:
+      #   - destination:
+      #       host: srip-home.default.svc.cluster.local
+      #       port:
+      #         number: 80
+      route:
+        - destination:
+            host: istio-ingressgateway.istio-system.svc.cluster.local
+            port:
+              number: 80
+          weight: 100

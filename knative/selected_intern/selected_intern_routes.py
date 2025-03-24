@@ -5,7 +5,7 @@ from flask import Blueprint, render_template #, request, redirect, url_for,jsoni
 # from app.models import Project 
 
 
-bp = Blueprint('selected_intern', __name__)
+bp = Blueprint('selected_intern', __name__, url_prefix="/selected_intern")
 
 @bp.route('/home', methods=['GET'])
 def home():
