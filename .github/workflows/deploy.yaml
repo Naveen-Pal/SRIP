@@ -44,5 +44,5 @@ jobs:
           ${{ env.REGISTRY }}/${{ env.OWNER_LC }}/srip-${{ matrix.service }}:latest
           ${{ env.REGISTRY }}/${{ env.OWNER_LC }}/srip-${{ matrix.service }}:${{ github.sha }}
         push: true
-        build-args: |
-          ENTITY=${{ matrix.service }}
+        # build-args: |
+        #   ENTITY=${{ matrix.service }}
