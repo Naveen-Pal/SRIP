@@ -20,4 +20,4 @@ EXPOSE 5000
 ARG ENTITY=home
 
 # Run the application
-CMD ["sh", "-c", "python -c 'from app import create_${ENTITY}_app as create_app; app = create_app(); app.run(host=\"0.0.0.0\", port=5000)'"]
+CMD ["sh", "-c", "python -c \"from app import create_${ENTITY}_app; app = create_${ENTITY}_app(); app.run(host='0.0.0.0', port=5000)\""]
