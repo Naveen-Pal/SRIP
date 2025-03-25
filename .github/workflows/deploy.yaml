@@ -45,4 +45,4 @@ jobs:
           ${{ env.REGISTRY }}/${{ env.OWNER_LC }}/srip-${{ matrix.service }}:${{ github.sha }}
         push: true
         build-args: |
-          SERVICE_NAME=${{ matrix.service }}
+          ENTITY=${{ matrix.service }}
