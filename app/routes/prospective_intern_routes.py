@@ -109,3 +109,8 @@ def direct_apply(project_id):
     result  = Faculty.query.with_entities(Faculty.faculty_id, Faculty.full_name).filter_by(allowed=1).all()
     faculties = [{"faculty_id": faculty_id, "name": full_name} for faculty_id, full_name in result]
     return render_template('intern/application_form.html',faculty_id=project.faculty_id, faculty_name=faculty_name, project_title=project_title,project_id=project_id, faculties=faculties)
+
+@bp.route('/status',methods =['GET'])
+def status():
+    return render_template('intern/dashboard.html')
+
