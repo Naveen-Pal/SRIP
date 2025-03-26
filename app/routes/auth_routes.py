@@ -12,26 +12,6 @@ import random
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-# @bp.route('/register', methods=['GET', 'POST'])
-# def register():
-#     if request.method == 'POST':
-#         user_email = request.form['user_email']
-#         user_pass = request.form['user_pass']
-#         user_name = request.form['user_name']
-        
-#         hashed_password = hash_password(user_pass)
-
-#         new_user = Faculty(
-#             password=hashed_password,
-#             email=user_email,
-#             full_name=user_name,
-#         )
-            
-#         db.session.add(new_user)
-#         db.session.commit()
-#         return redirect('/')
-#     return render_template('auth/register.html')
-
 @bp.route('/intern', methods=['GET', 'POST'])
 def login_intern():
     if request.method == 'POST':
@@ -127,7 +107,7 @@ def register():
 
         # Generate and store OTP in session
         otp = random.randint(100000, 999999)
-        session['otp'] = str(otp)  # Ensure OTP is a string
+        session['otp'] = str(otp) 
         session['user_data'] = {
             "email": user_email,
             "password": hash_password(user_pass),
