@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session,flash
+from flask import Blueprint, render_template, request, redirect, url_for, session,flash,jsonify
 from app.utils.auth_utils import hash_password, check_password
 from app.models.faculty import Faculty
 from app.models.coordinator import Coordinator
@@ -102,9 +102,10 @@ def logout():
 
 
 # Function to send OTP via email
+from app.config import Config 
 def send_otp(email, otp):
-    sender_email = "your-email@example.com"
-    sender_password = "your-email-password"
+    sender_email = Config.MAIL_USERNAME
+    sender_password = Config.MAIL_PASSWORD
     subject = "Your OTP for Registration"
     message = f"Your OTP for registration is: {otp}"
 
@@ -126,7 +127,7 @@ def register():
 
         # Generate and store OTP in session
         otp = random.randint(100000, 999999)
-        session['otp'] = otp
+        session['otp'] = str(otp)  # Ensure OTP is a string
         session['user_data'] = {
             "email": user_email,
             "password": hash_password(user_pass),
@@ -134,18 +135,19 @@ def register():
         }
 
         send_otp(user_email, otp)
-
-        # Render OTP verification page
-        return render_template('auth/verify_otp.html', email=user_email)
+        return jsonify({"success": True})
 
     return render_template('auth/register.html')
 
 @bp.route('/verify_otp', methods=['POST'])
 def verify_otp():
-    entered_otp = request.form['otp']
+    data = request.get_json()
+    entered_otp = data.get('otp', '')
 
-    if 'otp' in session and int(entered_otp) == session['otp']:
+    if 'otp' in session and entered_otp == session['otp']:
         user_data = session.pop('user_data', None)
+        session.pop('otp', None)
+
         if user_data:
             new_user = Faculty(
                 password=user_data['password'],
@@ -154,10 +156,6 @@ def verify_otp():
             )
             db.session.add(new_user)
             db.session.commit()
-            flash("Registration successful!", "success")
-            return redirect('/')
-    else:
-        flash("Invalid OTP, please try again.", "danger")
-        return redirect('/register')
+            return jsonify({"success": True})
 
-    return redirect('/')
+    return jsonify({"success": False, "message": "Invalid OTP"})

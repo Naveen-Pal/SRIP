@@ -1,6 +1,138 @@
-<form method="POST" action="{{ url_for('verify_otp') }}">
-    <h3>Verify Your OTP</h3>
-    <p>We have sent an OTP to {{ email }}. Enter it below:</p>
-    <input type="text" name="otp" placeholder="Enter OTP" required>
-    <button type="submit">Verify</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #4A90E2, #50BFA5);
+            margin: 0;
+        }
+
+        .otp-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 350px;
+        }
+
+        .otp-container h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .otp-container p {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .otp-container input {
+            width: 80%;
+            padding: 10px;
+            border: 2px solid #4A90E2;
+            border-radius: 8px;
+            outline: none;
+            text-align: center;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .otp-container input:focus {
+            border-color: #50BFA5;
+            box-shadow: 0 0 10px rgba(80, 191, 165, 0.5);
+        }
+
+        .otp-container button {
+            background: #4A90E2;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+        }
+
+        .otp-container button:hover {
+            background: #357ABD;
+        }
+
+        #message {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ff6b6b;
+            display: none;
+        }
+
+        .redirect-message {
+            font-size: 14px;
+            color: green;
+            display: none;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="otp-container">
+        <h3>Verify Your OTP</h3>
+        <p>We have sent an OTP to <strong>{{ email }}</strong>. <br> Please enter it below.</p>
+
+        <form id="otpForm" method="POST" action="{{ url_for('auth.verify_otp') }}">
+            <input type="text" name="otp" id="otpInput" placeholder="Enter OTP" required>
+            <button type="submit" id="submitBtn">Verify</button>
+        </form>
+
+        <p id="message">⚠ Incorrect OTP. Please check and try again.</p>
+        <p class="redirect-message" id="redirectingMsg">✅ OTP Verified! Redirecting...</p>
+        <p style="margin-top: 15px; font-size: 13px; color: #888;">Check your spam folder if you haven't received the OTP.</p>
+    </div>
+
+    <script>
+        document.getElementById("otpForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+        
+            let otpValue = document.getElementById("otpInput").value;
+            let submitBtn = document.getElementById("submitBtn");
+            let redirectMsg = document.getElementById("redirectingMsg");
+            let errorMsg = document.getElementById("message");
+        
+            // Send OTP to server for verification
+            fetch("{{ url_for('auth.verify_otp') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ otp: otpValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    redirectMsg.style.display = "block"; 
+                    errorMsg.style.display = "none";
+                    submitBtn.textContent = "Redirecting...";
+                    submitBtn.style.background = "#50BFA5";
+                    setTimeout(() => {
+                        window.location.href = "/"; // Redirect to home page
+                    }, 2000);
+                } else {
+                    errorMsg.style.display = "block";
+                    redirectMsg.style.display = "none";
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+        
+    </script>
+
+</body>
+</html>
