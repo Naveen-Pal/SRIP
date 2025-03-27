@@ -8,7 +8,7 @@ from app import db
 import uuid
 import smtplib
 import random
-from app.config import Config 
+from config import Config 
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
