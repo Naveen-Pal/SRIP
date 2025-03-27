@@ -16,11 +16,12 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f6f9;
-    padding: 20px;
+    
 }
 
 /* Navbar styling */
-.header {
+/*
+.header 
     display: flex;
     justify-content:left;
     align-items: center;
@@ -42,13 +43,12 @@ body {
     font-weight: bold;
     margin-left: 10vw;
     
-}
-
+}*/
 /* Container for the form */
-.container {
+.form-container {
     background-color: #ffffff;
     max-width: 1200px;
-    margin: 30px auto;
+    margin: 10px auto;
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -163,16 +163,16 @@ textarea {
     <!-- Navbar: Heading Only -->
 
     {% extends "base.html" %}
-
+    
     {% block content %}
 
-    <div class="container">
+    <div class="form-container">
         <h1 class="form-title">Project Details</h1>
         <form method="POST" >
             <!-- action="{{ url_for('prospective_intern.application_form') }}" -->
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="project_id" class="required"></label>
+                    <label for="project_id" class="required">Faculty Name</label>
                     <select name="faculty" id="faculty" required onchange="fetchProjects(this.value)">
                         <option value="">Select Faculty</option>
                         {% for faculty in faculties %}
