@@ -8,7 +8,7 @@ from app import db
 import uuid
 import smtplib
 import random
-
+from app.config import Config 
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -79,10 +79,6 @@ def logout():
     session.clear()
     return redirect('/')
 
-
-
-# Function to send OTP via email
-from app.config import Config 
 def send_otp(email, otp):
     sender_email = Config.MAIL_USERNAME
     sender_password = Config.MAIL_PASSWORD
