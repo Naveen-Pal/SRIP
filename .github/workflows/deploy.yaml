@@ -38,11 +38,11 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        context: .
-        file: ./docker/dockerfile.${{ matrix.service }}
+        context: ./knative/${{ matrix.service }}
+        file: ./knative/${{ matrix.service }}/dockerfile
         tags: |
           ${{ env.REGISTRY }}/${{ env.OWNER_LC }}/srip-${{ matrix.service }}:latest
           ${{ env.REGISTRY }}/${{ env.OWNER_LC }}/srip-${{ matrix.service }}:${{ github.sha }}
         push: true
-        # build-args: |
-        #   ENTITY=${{ matrix.service }}
+        build-args: |
+          SERVICE_NAME=${{ matrix.service }}
