@@ -1,7 +1,9 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import redirect, url_for, session
+from flask import redirect, session
 from functools import wraps
 from app.utils.session_utils import verify_session
+import smtplib
+from app.config import Config
 
 def hash_password(password):
     return generate_password_hash(password)
@@ -26,3 +28,19 @@ def login_required(user_type):
             return f(*args, **kwargs)
         return decorated_function
     return decorator
+
+def send_otp(email, otp):
+    sender_email = Config.MAIL_USERNAME
+    sender_password = Config.MAIL_PASSWORD
+    subject = "Your OTP for Registration"
+    message = f"Your OTP for registration is: {otp}"
+
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, email, f"Subject: {subject}\n\n{message}")
+        server.quit()
+    except Exception as e:
+        print("Error sending email:", e)
+        raise

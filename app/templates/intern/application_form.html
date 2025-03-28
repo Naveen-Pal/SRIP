@@ -168,8 +168,8 @@ textarea {
 
     <div class="form-container">
         <h1 class="form-title">Project Details</h1>
-        <form method="POST" >
-            <!-- action="{{ url_for('prospective_intern.application_form') }}" -->
+        <form method="POST" style="max-width: 600px; margin: 0 auto;">
+            <h3>Application Form</h3>
             <div class="form-grid">
                 <div class="form-group">
                     <label for="project_id" class="required">Faculty Name</label>
@@ -197,30 +197,6 @@ textarea {
                     <label for="project_title" class="required">Project Title</label>
                     <input type="text" name="project_title" id="project_title" readonly>
                 </div>
-                <!-- <div class="form-group">
-                    <label for="faculty" class="required">Faculty</label>
-                    <select name="faculty" id="faculty" required onchange="fetchProjects(this.value)">
-                        <option value="{{faculty_name}}">Select Faculty</option>
-                        {% for faculty in faculties %}
-                        <option value="{{ faculty.faculty_id }}">{{ faculty.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div> -->
-              
-                <!-- Project Code Selection -->
-                <!-- <div class="form-group">
-                    <label for="project_code" class="required">Project Code</label>
-                    <select name="project_code" id="project_code" required onchange="fillProjectTitle(this.value)">
-                        <option value="">Select Project Code</option>
-                    </select>
-                </div> -->
-                
-                <!-- Project Title Autofill -->
-                <!-- <div class="form-group">
-                    <label for="project_title" class="required">Project Title</label>
-                    <input type="text" name="project_title" id="project_title" readonly>
-                </div> -->
-               
                 <div class="form-group">
                     <label for="full_name" class="required">Full Name</label>
                     <input type="text" name="full_name" id="full_name" required>

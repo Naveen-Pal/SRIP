@@ -22,35 +22,3 @@ def create_app():
     app.register_blueprint(coordinator_routes.bp)
 
     return app
-
-def create_auth_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
-    db.init_app(app)
-    app.register_blueprint(auth_routes.bp)
-    return app
-
-def create_coordinator_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
-    app.register_blueprint(coordinator_routes.bp)
-    return app
-
-def create_faculty_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
-    db.init_app(app)
-    app.register_blueprint(faculty_routes.bp)
-    return app
-
-def create_prospective_intern_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
-    app.register_blueprint(prospective_intern_routes.bp)
-    return app
-
-def create_selected_intern_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
-    app.register_blueprint(selected_intern_routes.bp)
-    return app
