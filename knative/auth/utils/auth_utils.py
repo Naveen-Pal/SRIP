@@ -1,7 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import redirect, url_for, session
 from functools import wraps
-from app.utils.session_utils import verify_session
+from utils.session_utils import verify_session
 
 def hash_password(password):
     return generate_password_hash(password)
