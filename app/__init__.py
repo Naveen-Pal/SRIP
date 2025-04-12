@@ -4,7 +4,7 @@ from flask_mail import Mail
 from .config import Config
 
 db = SQLAlchemy()
-# mail = Mail()
+mail = Mail()
 
 from .routes import faculty_routes, prospective_intern_routes,selected_intern_routes, auth_routes, home_routes, coordinator_routes
 def create_app():

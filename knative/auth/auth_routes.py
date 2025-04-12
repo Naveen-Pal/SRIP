@@ -21,12 +21,12 @@ def login_intern():
         user = SelectedIntern.query.filter_by(email=user_mail).first()
         if user and check_password(user.password, user_pass):
             session_id = str(uuid.uuid4())
-            session['user_type'] = 0
+            session['user_type'] = 4
             session['session_id'] = session_id
             new_session = Session(
                 session_id=session_id,
                 user_id=user.intern_id,
-                user_type=0
+                user_type=4
             )
             db.session.add(new_session)
             db.session.commit()

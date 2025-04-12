@@ -1,21 +1,256 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}SRIP Portal{% endblock %}</title>
-    <link rel="icon" type="image/x-icon" href="/app/static/favicon.png">
-    <meta name="description" content="SRIP Portal for managing interns, faculty, and projects.">
-    <meta name="keywords" content="SRIP, Portal, Interns, Faculty, Projects">
-    <meta name="author" content="Naveen-Pal">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    {% include "header.html" %}
-    <main class="container mt-5">
-        {% block content %}Status{% endblock %}
-    </main>
-    {% include "footer.html" %}
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Intern Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 mb-3">Welcome, {{ intern.full_name }}</h1>
+            <p class="lead text-muted">Track your project progress and submissions</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="/selected_intern/profile" class="btn btn-outline-secondary">View Profile</a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Project Information</h5>
+                </div>
+                <div class="card-body">
+                    <h4 class="mb-3">{{ project.project_title }}</h4>
+                    <p class="mb-4">{{ project.project_description }}</p>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Faculty Mentor:</strong> {{ faculty.full_name }}</p>
+                            <p><strong>Faculty Email:</strong> {{ faculty.email }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Project ID:</strong> {{ project.project_id }}</p>
+                            <p><strong>Mode:</strong> {{ project.project_mode | capitalize }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Research Proposal</h5>
+                </div>
+                <div class="card-body">
+                    {% if proposal %}
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                {% if proposal.status == 'pending' %}
+                                    <span class="badge bg-warning fs-6">Pending</span>
+                                {% elif proposal.status == 'approved' %}
+                                    <span class="badge bg-success fs-6">Approved</span>
+                                {% elif proposal.status == 'rejected' %}
+                                    <span class="badge bg-danger fs-6">Rejected</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ proposal.title }}</h6>
+                                <small class="text-muted">Submitted on {{ proposal.submission_date.strftime('%d %b %Y') }}</small>
+                            </div>
+                        </div>
+                        
+                        {% if proposal.feedback %}
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-2">Faculty Feedback:</h6>
+                                <div class="p-3 bg-light rounded">
+                                    {{ proposal.feedback|safe }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        <a href="/selected_intern/research_proposal" class="btn btn-outline-primary btn-sm">View Proposal</a>
+                    {% else %}
+                        <p class="mb-3">You haven't submitted your research proposal yet.</p>
+                        <div class="d-grid gap-2">
+                            <a href="/selected_intern/research_proposal" class="btn btn-primary">
+                                Submit Research Proposal
+                            </a>
+                        </div>
+                        <small class="text-muted mt-2 d-block">Your research proposal needs to be submitted within one week of project allocation.</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Weekly Submissions</h5>
+                    <a href="/selected_intern/weekly_submissions" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <h6 class="mb-1">Tuesday Report</h6>
+                            {% set tuesday_exists = false %}
+                            {% for submission in weekly_submissions %}
+                                {% if submission.submission_type == 'tuesday' and not tuesday_exists %}
+                                    {% set tuesday_exists = true %}
+                                    <small class="text-muted">Last submitted: {{ submission.submission_date.strftime('%d %b %Y') }}</small>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not tuesday_exists %}
+                                <small class="text-muted">No submissions yet</small>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="/selected_intern/weekly_submission/tuesday" class="btn btn-sm btn-outline-primary">Submit</a>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="mb-1">Friday Report</h6>
+                            {% set friday_exists = false %}
+                            {% for submission in weekly_submissions %}
+                                {% if submission.submission_type == 'friday' and not friday_exists %}
+                                    {% set friday_exists = true %}
+                                    <small class="text-muted">Last submitted: {{ submission.submission_date.strftime('%d %b %Y') }}</small>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not friday_exists %}
+                                <small class="text-muted">No submissions yet</small>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="/selected_intern/weekly_submission/friday" class="btn btn-sm btn-outline-primary">Submit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Milestone Submissions</h5>
+                    <a href="/selected_intern/milestone_submissions" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <h6 class="mb-1">Midterm Submission</h6>
+                            {% set midterm_exists = false %}
+                            {% for submission in milestone_submissions %}
+                                {% if submission.submission_type == 'midterm' and not midterm_exists %}
+                                    {% set midterm_exists = true %}
+                                    <small class="text-muted">
+                                        {% if submission.rating %}
+                                            Rated: {{ submission.rating }}/5
+                                        {% else %}
+                                            Submitted: {{ submission.submission_date.strftime('%d %b %Y') }}
+                                        {% endif %}
+                                    </small>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not midterm_exists %}
+                                <small class="text-muted">Not submitted yet</small>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="/selected_intern/milestone_submission/midterm" class="btn btn-sm btn-outline-primary">
+                                {% if midterm_exists %}View{% else %}Submit{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="mb-1">Pre-Final Submission</h6>
+                            {% set prefinal_exists = false %}
+                            {% for submission in milestone_submissions %}
+                                {% if submission.submission_type == 'pre_final' and not prefinal_exists %}
+                                    {% set prefinal_exists = true %}
+                                    <small class="text-muted">
+                                        {% if submission.rating %}
+                                            Rated: {{ submission.rating }}/5
+                                        {% else %}
+                                            Submitted: {{ submission.submission_date.strftime('%d %b %Y') }}
+                                        {% endif %}
+                                    </small>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not prefinal_exists %}
+                                <small class="text-muted">Not submitted yet</small>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="/selected_intern/milestone_submission/pre_final" class="btn btn-sm btn-outline-primary">
+                                {% if prefinal_exists %}View{% else %}Submit{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Recent Feedback</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% set has_feedback = false %}
+                        
+                        {% for submission in weekly_submissions %}
+                            {% if submission.feedback %}
+                                {% set has_feedback = true %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ submission.title }}</h6>
+                                        <small class="text-muted">{{ submission.feedback_date.strftime('%d %b %Y') }}</small>
+                                    </div>
+                                    <p class="mb-1 small">{{ submission.feedback|truncate(100) }}</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-success me-2">Rating: {{ submission.rating }}/5</span>
+                                        <small class="text-muted">{{ submission.submission_type|capitalize }} Report</small>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% for submission in milestone_submissions %}
+                            {% if submission.remarks %}
+                                {% set has_feedback = true %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ submission.title }}</h6>
+                                        <small class="text-muted">{{ submission.review_date.strftime('%d %b %Y') }}</small>
+                                    </div>
+                                    <p class="mb-1 small">{{ submission.remarks|truncate(100) }}</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-success me-2">Rating: {{ submission.rating }}/5</span>
+                                        <small class="text-muted">{{ submission.submission_type|replace('_', '-')|capitalize }} Submission</small>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if not has_feedback %}
+                            <div class="list-group-item text-center py-3">
+                                <p class="text-muted mb-0">No feedback received yet</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

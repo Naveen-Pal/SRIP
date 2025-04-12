@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Interns List - Coordinator Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('coordinator.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Interns List</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Interns List</h1>
+                <div>
+                    <a href="{{ url_for('coordinator.email_selected_interns') }}" class="btn btn-primary">
+                        <i class="fas fa-envelope"></i> Email Selected Interns
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Search and Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form action="{{ url_for('coordinator.interns_list') }}" method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" placeholder="Search by name, email, or college" value="{{ search }}">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <select class="form-select" name="status">
+                                <option value="all" {% if status == 'all' %}selected{% endif %}>All Status</option>
+                                <option value="selected" {% if status == 'selected' %}selected{% endif %}>Selected</option>
+                                <option value="waitlisted" {% if status == 'waitlisted' %}selected{% endif %}>Waitlisted</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <select class="form-select" name="faculty_id">
+                                <option value="all" {% if faculty_id == 'all' %}selected{% endif %}>All Faculty</option>
+                                {% for faculty in faculties %}
+                                <option value="{{ faculty.faculty_id }}" {% if faculty_id == faculty.faculty_id|string %}selected{% endif %}>{{ faculty.full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <select class="form-select" name="project_id">
+                                <option value="all" {% if project_id == 'all' %}selected{% endif %}>All Projects</option>
+                                {% for project in projects %}
+                                <option value="{{ project.project_id }}" {% if project_id == project.project_id|string %}selected{% endif %}>{{ project.project_id }} - {{ project.project_title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-secondary w-100">
+                                <i class="fas fa-filter"></i> Apply Filters
+                            </button>
+                        </div>
+                        
+                        <div class="col-12 mt-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="form-inline">
+                                    <label class="me-2">Sort by:</label>
+                                    <div class="input-group input-group-sm" style="width: 300px;">
+                                        <select class="form-select" name="sort">
+                                            <option value="intern_id" {% if sort_by == 'intern_id' %}selected{% endif %}>ID</option>
+                                            <option value="full_name" {% if sort_by == 'full_name' %}selected{% endif %}>Name</option>
+                                            <option value="email" {% if sort_by == 'email' %}selected{% endif %}>Email</option>
+                                            <option value="college_name" {% if sort_by == 'college_name' %}selected{% endif %}>College</option>
+                                            <option value="faculty_name" {% if sort_by == 'faculty_name' %}selected{% endif %}>Faculty</option>
+                                            <option value="project_title" {% if sort_by == 'project_title' %}selected{% endif %}>Project</option>
+                                            <option value="isSelected" {% if sort_by == 'isSelected' %}selected{% endif %}>Status</option>
+                                        </select>
+                                        <select class="form-select" name="order">
+                                            <option value="asc" {% if order == 'asc' %}selected{% endif %}>Ascending</option>
+                                            <option value="desc" {% if order == 'desc' %}selected{% endif %}>Descending</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-sort"></i> Sort
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <a href="{{ url_for('coordinator.interns_list') }}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-sync"></i> Reset Filters
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Interns List Table -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Interns ({{ interns_data|length }})</h5>
+                        <div>
+                            <div class="btn-group" role="group">
+                                <a href="{{ url_for('coordinator.interns_list', status='all') }}" class="btn btn-sm btn-outline-secondary {% if status == 'all' %}active{% endif %}">All</a>
+                                <a href="{{ url_for('coordinator.interns_list', status='selected') }}" class="btn btn-sm btn-outline-success {% if status == 'selected' %}active{% endif %}">Selected</a>
+                                <a href="{{ url_for('coordinator.interns_list', status='waitlisted') }}" class="btn btn-sm btn-outline-warning {% if status == 'waitlisted' %}active{% endif %}">Waitlisted</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">College</th>
+                                    <th scope="col">Faculty</th>
+                                    <th scope="col">Project</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in interns_data %}
+                                <tr>
+                                    <td>{{ item.intern.intern_id }}</td>
+                                    <td>{{ item.intern.full_name }}</td>
+                                    <td>{{ item.intern.email }}</td>
+                                    <td>{{ item.intern.college_name }}</td>
+                                    <td>{{ item.faculty.full_name }}</td>
+                                    <td>
+                                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ item.project.project_title }}">
+                                            {{ item.project.project_id }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if item.intern.isSelected == 1 %}
+                                        <span class="badge bg-success">Selected</span>
+                                        {% else %}
+                                        <span class="badge bg-warning text-dark">Waitlisted</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#internModal{{ item.intern.intern_id }}">
+                                                <i class="fas fa-eye"></i> Details
+                                            </button>
+                                            
+                                            <form method="post" action="{{ url_for('coordinator.toggle_selection', intern_id=item.intern.intern_id) }}" style="display:inline;">
+                                                <button type="submit" class="btn btn-sm {% if item.intern.isSelected == 1 %}btn-warning{% else %}btn-success{% endif %}" onclick="return confirm('Are you sure you want to {{ 'remove from' if item.intern.isSelected == 1 else 'add to' }} selection?')">
+                                                    <i class="fas {% if item.intern.isSelected == 1 %}fa-times{% else %}fa-check{% endif %}"></i> 
+                                                    {{ 'Remove' if item.intern.isSelected == 1 else 'Select' }}
+                                                </button>
+                                            </form>
+                                        </div>
+                                        
+                                        <!-- Intern Details Modal -->
+                                        <div class="modal fade" id="internModal{{ item.intern.intern_id }}" tabindex="-1" aria-labelledby="internModalLabel{{ item.intern.intern_id }}" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="internModalLabel{{ item.intern.intern_id }}">{{ item.intern.full_name }}</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <h6>Personal Information</h6>
+                                                                <p><strong>Name:</strong> {{ item.intern.full_name }}</p>
+                                                                <p><strong>Email:</strong> {{ item.intern.email }}</p>
+                                                                <p><strong>Phone:</strong> {{ item.intern.mobile }}</p>
+                                                                <p><strong>Nationality:</strong> {{ item.intern.nationality }}</p>
+                                                                <p><strong>City:</strong> {{ item.intern.permanent_city }}</p>
+                                                                <p><strong>DOB:</strong> {{ item.intern.date_of_birth }}</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <h6>Academic Information</h6>
+                                                                <p><strong>College:</strong> {{ item.intern.college_name }}</p>
+                                                                <p><strong>Degree:</strong> {{ item.intern.degree }}</p>
+                                                                <p><strong>Department:</strong> {{ item.intern.department }}</p>
+                                                                <p><strong>Year Joined:</strong> {{ item.intern.year_of_joining }}</p>
+                                                                <p><strong>Location:</strong> {{ item.intern.college_city }}, {{ item.intern.college_state }}, {{ item.intern.college_country }}</p>
+                                                                <p><strong>GPA:</strong> {{ item.intern.gpa_value }} ({{ item.intern.gpa_type }})</p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <hr>
+                                                        
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <h6>Project Information</h6>
+                                                                <p><strong>Faculty:</strong> {{ item.faculty.full_name }}</p>
+                                                                <p><strong>Project:</strong> {{ item.project.project_title }} ({{ item.project.project_id }})</p>
+                                                                <p><strong>Mode:</strong> {{ item.project.project_mode }}</p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <hr>
+                                                        
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <h6>Statement of Purpose</h6>
+                                                                <p>{{ item.application.statement_of_purpose }}</p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <hr>
+                                                        
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <h6>Internship Availability</h6>
+                                                                <p>Can complete 8 weeks internship: <strong>{{ 'Yes' if item.application.can_complete_internship else 'No' }}</strong></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <form method="post" action="{{ url_for('coordinator.toggle_selection', intern_id=item.intern.intern_id) }}" style="display:inline;">
+                                                            <button type="submit" class="btn {% if item.intern.isSelected == 1 %}btn-warning{% else %}btn-success{% endif %}">
+                                                                <i class="fas {% if item.intern.isSelected == 1 %}fa-times{% else %}fa-check{% endif %}"></i> 
+                                                                {{ 'Remove from Selection' if item.intern.isSelected == 1 else 'Select Intern' }}
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center">No interns found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script>
+    $(document).ready(function(){
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+</script>
+{% endblock %}

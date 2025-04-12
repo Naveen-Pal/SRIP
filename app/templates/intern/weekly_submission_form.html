@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Weekly Submission{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/selected_intern">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/selected_intern/weekly_submissions">Weekly Submissions</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ submission_type|capitalize }} Submission</li>
+        </ol>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 mb-0">{{ submission_type|capitalize }} Submission</h1>
+            <p class="text-muted">Report your progress for this week</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            {% if existing_submission %}
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">You have already submitted for this week</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            You have already submitted a {{ submission_type }} report for this week. You can submit a new report next week.
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="text-muted mb-2">Title:</h6>
+                            <p class="mb-0">{{ existing_submission.title }}</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="text-muted mb-2">Content:</h6>
+                            <div class="p-3 bg-light rounded">
+                                {{ existing_submission.content }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="mb-1"><strong>Submitted:</strong> {{ existing_submission.submission_date.strftime('%d %B %Y, %H:%M') }}</p>
+                        </div>
+                        
+                        {% if existing_submission.feedback %}
+                            <div class="card mb-3 border-info">
+                                <div class="card-header bg-info bg-opacity-10">
+                                    <h6 class="mb-0">Faculty Feedback</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-2"><strong>Rating:</strong> {{ existing_submission.rating }}/5</p>
+                                    <p class="mb-1">{{ existing_submission.feedback }}</p>
+                                    <small class="text-muted">Feedback provided on {{ existing_submission.feedback_date.strftime('%d %B %Y') }}</small>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                Your submission is pending review by the faculty.
+                            </div>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/selected_intern/weekly_submissions" class="btn btn-primary">View All Submissions</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">New {{ submission_type|capitalize }} Submission</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="" method="post">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Report Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                                <small class="text-muted">Choose a descriptive title summarizing your work this period</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Report Content <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="content" name="content" rows="10" required></textarea>
+                                <small class="text-muted">
+                                    Include the following in your submission:
+                                    <ul>
+                                        <li>Tasks completed since last submission</li>
+                                        <li>Challenges faced and how you addressed them</li>
+                                        <li>Current status of your project</li>
+                                        <li>Plan for the next few days</li>
+                                        <li>Any questions or concerns for your faculty mentor</li>
+                                    </ul>
+                                </small>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="/selected_intern/weekly_submissions" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-primary">Submit Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Submission Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-4">
+                        <li class="mb-2">Be specific about what you've accomplished since your last report.</li>
+                        <li class="mb-2">Mention any roadblocks or challenges you're facing.</li>
+                        <li class="mb-2">Include your plans for the upcoming days.</li>
+                        <li class="mb-2">Keep your writing clear and concise.</li>
+                        <li>Ask questions if you need guidance from your faculty mentor.</li>
+                    </ul>
+                    
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        {% if submission_type == 'tuesday' %}
+                            Tuesday submissions should focus on your progress since Friday and your plans for the first half of the week.
+                        {% else %}
+                            Friday submissions should summarize your weekly progress and outline your goals for next week.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Project Information</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-2">{{ project.project_title }}</h6>
+                    <p class="mb-3 small">{{ project.project_description|truncate(150) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

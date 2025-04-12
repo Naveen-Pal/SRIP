@@ -16,13 +16,16 @@ def login_required(user_type):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             session_id = session.get('session_id')
-            if not user_type or not session_id or not verify_session(session_id, user_type):
-                if (user_type == 1):
+            if session_id is None or not verify_session(session_id, user_type):
+                # Redirect based on the required user type
+                if user_type == 1:
                     return redirect('/auth/faculty')
-                elif (user_type == 2):
+                elif user_type == 2:
                     return redirect('/auth/coordinator')
-                elif (user_type == 0):
-                    return redirect('/auth/intern')
+                elif user_type == 3:
+                    return redirect('/auth/intern')  # Prospective intern login
+                elif user_type == 4:
+                    return redirect('/auth/intern')  # Selected intern login
                 else:
                     return redirect('/')
             return f(*args, **kwargs)

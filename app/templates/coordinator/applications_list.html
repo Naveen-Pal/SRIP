@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Applications List - Coordinator Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('coordinator.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Applications List</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Applications List</h1>
+            </div>
+            
+            <!-- Search and Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form action="{{ url_for('coordinator.applications_list') }}" method="get" class="row g-3">
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" placeholder="Search by name or email" value="{{ search }}">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <select class="form-select" name="faculty_id">
+                                <option value="all" {% if faculty_id == 'all' %}selected{% endif %}>All Faculty</option>
+                                {% for faculty in faculties %}
+                                <option value="{{ faculty.faculty_id }}" {% if faculty_id == faculty.faculty_id|string %}selected{% endif %}>{{ faculty.full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <select class="form-select" name="project_id">
+                                <option value="all" {% if project_id == 'all' %}selected{% endif %}>All Projects</option>
+                                {% for project in projects %}
+                                <option value="{{ project.project_id }}" {% if project_id == project.project_id|string %}selected{% endif %}>{{ project.project_id }} - {{ project.project_title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-secondary w-100">
+                                <i class="fas fa-filter"></i> Apply
+                            </button>
+                        </div>
+                        
+                        <div class="col-12 mt-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="form-inline">
+                                    <label class="me-2">Sort by:</label>
+                                    <div class="input-group input-group-sm" style="width: 300px;">
+                                        <select class="form-select" name="sort">
+                                            <option value="application_id" {% if sort_by == 'application_id' %}selected{% endif %}>ID</option>
+                                            <option value="full_name" {% if sort_by == 'full_name' %}selected{% endif %}>Name</option>
+                                            <option value="faculty_name" {% if sort_by == 'faculty_name' %}selected{% endif %}>Faculty</option>
+                                            <option value="project_title" {% if sort_by == 'project_title' %}selected{% endif %}>Project</option>
+                                        </select>
+                                        <select class="form-select" name="order">
+                                            <option value="asc" {% if order == 'asc' %}selected{% endif %}>Ascending</option>
+                                            <option value="desc" {% if order == 'desc' %}selected{% endif %}>Descending</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-sort"></i> Sort
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <a href="{{ url_for('coordinator.applications_list') }}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-sync"></i> Reset Filters
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Applications List Table -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Applications ({{ applications_data|length }})</h5>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="applicationsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Intern</th>
+                                    <th scope="col">Faculty</th>
+                                    <th scope="col">Project</th>
+                                    <th scope="col">Availability</th>
+                                    <th scope="col">Selection Status</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in applications_data %}
+                                <tr>
+                                    <td>{{ item.application.application_id }}</td>
+                                    <td>
+                                        <div>{{ item.intern.full_name }}</div>
+                                        <small class="text-muted">{{ item.intern.email }}</small>
+                                    </td>
+                                    <td>{{ item.faculty.full_name }}</td>
+                                    <td>
+                                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ item.project.project_title }}">
+                                            {{ item.project.project_id }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if item.application.can_complete_internship %}
+                                        <span class="badge bg-success">Available</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Not Available</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if item.intern.isSelected == 1 %}
+                                        <span class="badge bg-success">Selected</span>
+                                        {% else %}
+                                        <span class="badge bg-warning text-dark">Waitlisted</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#applicationModal{{ item.application.application_id }}">
+                                                <i class="fas fa-eye"></i> Details
+                                            </button>
+                                            
+                                            <form method="post" action="{{ url_for('coordinator.toggle_selection', intern_id=item.intern.intern_id) }}" style="display:inline;">
+                                                <button type="submit" class="btn btn-sm {% if item.intern.isSelected == 1 %}btn-warning{% else %}btn-success{% endif %}" onclick="return confirm('Are you sure you want to {{ 'remove from' if item.intern.isSelected == 1 else 'add to' }} selection?')">
+                                                    <i class="fas {% if item.intern.isSelected == 1 %}fa-times{% else %}fa-check{% endif %}"></i> 
+                                                    {{ 'Remove' if item.intern.isSelected == 1 else 'Select' }}
+                                                </button>
+                                            </form>
+                                        </div>
+                                        
+                                        <!-- Application Details Modal -->
+                                        <div class="modal fade" id="applicationModal{{ item.application.application_id }}" tabindex="-1" aria-labelledby="applicationModalLabel{{ item.application.application_id }}" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="applicationModalLabel{{ item.application.application_id }}">
+                                                            Application Details
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row mb-4">
+                                                            <div class="col-md-6">
+                                                                <h6 class="border-bottom pb-2">Intern Information</h6>
+                                                                <p><strong>Name:</strong> {{ item.intern.full_name }}</p>
+                                                                <p><strong>Email:</strong> {{ item.intern.email }}</p>
+                                                                <p><strong>Phone:</strong> {{ item.intern.mobile }}</p>
+                                                                <p><strong>College:</strong> {{ item.intern.college_name }}</p>
+                                                                <p><strong>Degree:</strong> {{ item.intern.degree }}</p>
+                                                                <p><strong>Department:</strong> {{ item.intern.department }}</p>
+                                                                <p><strong>GPA:</strong> {{ item.intern.gpa_value }} ({{ item.intern.gpa_type }})</p>
+                                                            </div>
+                                                            
+                                                            <div class="col-md-6">
+                                                                <h6 class="border-bottom pb-2">Project Information</h6>
+                                                                <p><strong>Faculty:</strong> {{ item.faculty.full_name }}</p>
+                                                                <p><strong>Project ID:</strong> {{ item.project.project_id }}</p>
+                                                                <p><strong>Title:</strong> {{ item.project.project_title }}</p>
+                                                                <p><strong>Mode:</strong> {{ item.project.project_mode }}</p>
+                                                                <p><strong>Spots:</strong> {{ item.project.number_of_student }}</p>
+                                                                <p><strong>Application Status:</strong> 
+                                                                    {% if item.intern.isSelected == 1 %}
+                                                                    <span class="badge bg-success">Selected</span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-warning text-dark">Waitlisted</span>
+                                                                    {% endif %}
+                                                                </p>
+                                                                <p><strong>Can complete 8 weeks:</strong> 
+                                                                    {% if item.application.can_complete_internship %}
+                                                                    <span class="badge bg-success">Yes</span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-danger">No</span>
+                                                                    {% endif %}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <h6 class="border-bottom pb-2">Statement of Purpose</h6>
+                                                        <div class="p-3 bg-light rounded">
+                                                            <p>{{ item.application.statement_of_purpose }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <form method="post" action="{{ url_for('coordinator.toggle_selection', intern_id=item.intern.intern_id) }}" style="display:inline;">
+                                                            <button type="submit" class="btn {% if item.intern.isSelected == 1 %}btn-warning{% else %}btn-success{% endif %}">
+                                                                {{ 'Remove from Selection' if item.intern.isSelected == 1 else 'Select Intern' }}
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No applications found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script>
+    $(document).ready(function(){
+        $('[data-bs-toggle="tooltip"]').tooltip();
+        
+        // Enable DataTable functionality for searching and sorting
+        $('#applicationsTable').DataTable({
+            "paging": true,
+            "ordering": true,
+            "info": true,
+            "searching": true,
+            "pageLength": 25,
+            "dom": '<"top"f>rt<"bottom"lp><"clear">'
+        });
+    });
+</script>
+{% endblock %}
