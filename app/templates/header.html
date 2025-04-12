@@ -11,9 +11,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if session.get('user_type') == 0 %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('intern.dashboard') }}">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('intern.submit_report') }}">Submit Report</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('intern.application_form') }}">Application Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/auth/logout">logout</a></li>
+                    
                     {% elif session.get('user_type') == 1 %}
                     <li class="nav-item"><a class="nav-link" href="/faculty/add_project">Add Project</a></li>
                     {% elif session.get('user_type') == 2 %}

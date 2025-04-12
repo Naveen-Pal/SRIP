@@ -3,10 +3,11 @@ from app.models.application import ApplicationForm
 from app import db
 from app.models.faculty import Faculty
 from app.models.project import Project
+from app.utils.auth_middleware import role_required
 
 bp = Blueprint('prospective_intern', __name__, url_prefix='/prospective_intern')
-
 @bp.route('/application_form', methods=['GET', 'POST'])
+@role_required("prospective_intern")
 def application_form():
     if request.method == 'POST':
         statement_of_purpose = request.form['statement_of_purpose']
@@ -33,6 +34,7 @@ def application_form():
                            faculty=faculty)
 
 @bp.route('/get_projects',methods=['GET'])
+@role_required("prospective_intern")
 def get_projects():
     faculty_id = request.args.get('faculty_id')
 
@@ -44,9 +46,10 @@ def get_projects():
     project_list = [{"project_id": p.project_id, "project_title": p.project_title} for p in projects]
     return jsonify({"projects": project_list}), 200
 
-
 @bp.route('/projects', methods=['GET', 'POST'])
+@role_required("prospective_intern")
 def projects():
+    print("inside projects")
     projects = Project.query.with_entities(Project.project_id, Project.project_title, Project.project_description, Project.faculty_id).all()
 
     project_list = sorted([{
@@ -59,6 +62,7 @@ def projects():
     return render_template('intern/projects.html', projects=project_list)
 
 @bp.route('/<int:project_id>', methods=['GET', 'POST'])
+@role_required("prospective_intern")
 def direct_apply(project_id):
     # project_id = request.view_args['id']
     # print(project_id)
@@ -72,6 +76,7 @@ def direct_apply(project_id):
     return render_template('intern/application_form.html',faculty_id=project.faculty_id, faculty_name=faculty_name, project_title=project_title,project_id=project_id, faculties=faculties)
 
 @bp.route('/status',methods =['GET'])
+@role_required("prospective_intern")
 def status():
     return render_template('intern/dashboard.html')
 

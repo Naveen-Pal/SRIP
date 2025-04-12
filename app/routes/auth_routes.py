@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, session,flash,jsonify
+from flask import Blueprint, render_template,g, request, redirect, session,flash,jsonify,make_response
 from app.utils.auth_utils import hash_password, check_password, send_otp
 from app.models.faculty import Faculty
 from app.models.coordinator import Coordinator
@@ -8,17 +8,29 @@ from app import db
 import uuid
 import random
 from datetime import datetime
+from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity,get_jwt,set_access_cookies,unset_jwt_cookies
+
+
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
+def generate_token(user_id,role):
+    payload = {
+        "user_id": user_id,
+        "role": role,
+    }
+    access_token = create_access_token(identity=payload, expires_delta=False)  # No expiration for this example
+    return access_token
 
-@bp.route('/intern', methods=['GET', 'POST'])
+
+@bp.route('/prospective_intern', methods=['GET', 'POST'])
 def login_intern():
     if request.method == 'POST':
         user_mail = request.form['user_mail']
         user_pass = request.form['user_pass']
         # user = User.query.filter_by(user_login=user_login).first()
-        user = InternDetail.query.filter_by(email=user_mail).first()
+        user = InternDetail.query.filter_by(email=user_mail,isSelected=0).first()
         if user and check_password(user.password, user_pass):
+            # Session based authentication
             session_id = str(uuid.uuid4())
             session['user_type'] = 0
             session['session_id'] = session_id
@@ -29,8 +41,65 @@ def login_intern():
             )
             db.session.add(new_session)
             db.session.commit()
-            return render_template('/intern/index.html')    
-    return render_template('/auth/login_intern.html')
+            
+            # JWT Based authentication
+            # if(user.isSelected == 0):
+            
+            role = "prospective_intern"
+            token = generate_token(user.intern_id, role)
+            response = make_response(redirect('/prospective_intern/projects'))  # Redirect to intern dashboard
+            set_access_cookies(response, token)  # Store JWT in a cookie
+            return response    
+
+    return render_template('/auth/login_prospective_intern.html',error={"error":"Invalid Credentials"})
+
+@bp.before_request
+def decode_jwt():
+    token = request.cookies.get('access_token_cookie')
+    if token:
+        try:
+            payload = get_jwt(token)
+            g.user = payload
+        except Exception as e:
+            g.user = None
+    else:
+        g.user = None
+        
+@bp.context_processor
+def inject_user():
+    return dict(user=g.user)
+
+@bp.route('/selected_intern', methods=['GET', 'POST'])
+def login_selected_intern():
+    if request.method == 'POST':
+        user_mail = request.form['user_mail']
+        user_pass = request.form['user_pass']
+        # user = User.query.filter_by(user_login=user_login).first()
+        user = InternDetail.query.filter_by(email=user_mail,isSelected=1).first()
+        if user and check_password(user.password, user_pass):
+            # Session based authentication
+            session_id = str(uuid.uuid4())
+            session['user_type'] = 1
+            session['session_id'] = session_id
+            new_session = Session(
+                session_id=session_id,
+                user_id=user.intern_id,
+                user_type=1
+            )
+            db.session.add(new_session)
+            db.session.commit()
+            
+            # JWT Based authentication
+            role = "selected_intern"
+            token = generate_token(user.intern_id, role)
+            print("generating selected intern token successfully")
+            response = make_response(redirect('/selected_intern/home'))
+            set_access_cookies(response, token)  # Store JWT in a cookie
+            return response
+    print("going to render login page for selected intern")
+    return render_template('/auth/login_selected_intern.html',error={"error":"Invalid Credentials"})
+
+
 
 @bp.route('/faculty', methods=['GET', 'POST'])
 def login_faculty():
@@ -49,7 +118,13 @@ def login_faculty():
             )
             db.session.add(new_session)
             db.session.commit()
-            return redirect('/faculty/add_project')
+            
+            role = "faculty"
+            print("generating faculty token successfully")
+            token = generate_token(user.faculty_id, role)
+            response = make_response(redirect('/faculty/add_project'))  # Redirect to intern dashboard
+            set_access_cookies(response, token)  # Store JWT in a cookie
+            return response    
     return render_template('/auth/login_faculty.html')
 
 @bp.route('/coordinator', methods=['GET', 'POST'])
@@ -70,13 +145,19 @@ def login_coordinator():
             )
             db.session.add(new_session)
             db.session.commit()
-            return redirect('/coordinator/faculty_approvement')
+            token = generate_token(user.coordinator_id, "coordinator")
+            response = make_response(redirect('/coordinator/faculty_approvement'))
+            set_access_cookies(response, token)  # Store JWT in a cookie
+            return response
     return render_template('/auth/login_coordinator.html')
 
 @bp.route('/logout')
 def logout():
-    session.clear()
-    return redirect('/')
+    response = make_response(redirect('/')) 
+    # Clear session data
+    session.pop('user_id', None)
+    unset_jwt_cookies(response)
+    return response
 
 @bp.route('/verify_otp', methods=['POST'])
 def verify_otp():
