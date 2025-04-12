@@ -13,12 +13,13 @@ from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identi
 
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
-def generate_token(user_id,role):
-    payload = {
-        "user_id": user_id,
-        "role": role,
-    }
-    access_token = create_access_token(identity=payload, expires_delta=False)  # No expiration for this example
+def generate_token(user_id, role):
+    print("Generating token for user_id:", user_id, "with role:", role)
+    access_token = create_access_token(
+        identity=str(user_id),  # identity must be a string/int
+        additional_claims={"role": role},
+        expires_delta=False
+    )
     return access_token
 
 
@@ -27,10 +28,8 @@ def login_intern():
     if request.method == 'POST':
         user_mail = request.form['user_mail']
         user_pass = request.form['user_pass']
-        # user = User.query.filter_by(user_login=user_login).first()
         user = InternDetail.query.filter_by(email=user_mail,isSelected=0).first()
         if user and check_password(user.password, user_pass):
-            # Session based authentication
             session_id = str(uuid.uuid4())
             session['user_type'] = 0
             session['session_id'] = session_id
@@ -42,13 +41,10 @@ def login_intern():
             db.session.add(new_session)
             db.session.commit()
             
-            # JWT Based authentication
-            # if(user.isSelected == 0):
-            
             role = "prospective_intern"
             token = generate_token(user.intern_id, role)
             response = make_response(redirect('/prospective_intern/projects'))  # Redirect to intern dashboard
-            set_access_cookies(response, token)  # Store JWT in a cookie
+            set_access_cookies(response, token)  
             return response    
 
     return render_template('/auth/login_prospective_intern.html',error={"error":"Invalid Credentials"})
@@ -74,10 +70,8 @@ def login_selected_intern():
     if request.method == 'POST':
         user_mail = request.form['user_mail']
         user_pass = request.form['user_pass']
-        # user = User.query.filter_by(user_login=user_login).first()
         user = InternDetail.query.filter_by(email=user_mail,isSelected=1).first()
         if user and check_password(user.password, user_pass):
-            # Session based authentication
             session_id = str(uuid.uuid4())
             session['user_type'] = 1
             session['session_id'] = session_id
@@ -89,12 +83,11 @@ def login_selected_intern():
             db.session.add(new_session)
             db.session.commit()
             
-            # JWT Based authentication
             role = "selected_intern"
             token = generate_token(user.intern_id, role)
             print("generating selected intern token successfully")
             response = make_response(redirect('/selected_intern/home'))
-            set_access_cookies(response, token)  # Store JWT in a cookie
+            set_access_cookies(response, token)  
             return response
     print("going to render login page for selected intern")
     return render_template('/auth/login_selected_intern.html',error={"error":"Invalid Credentials"})
@@ -122,8 +115,8 @@ def login_faculty():
             role = "faculty"
             print("generating faculty token successfully")
             token = generate_token(user.faculty_id, role)
-            response = make_response(redirect('/faculty/add_project'))  # Redirect to intern dashboard
-            set_access_cookies(response, token)  # Store JWT in a cookie
+            response = make_response(redirect('/faculty/add_project'))  
+            set_access_cookies(response, token)
             return response    
     return render_template('/auth/login_faculty.html')
 
@@ -147,14 +140,13 @@ def login_coordinator():
             db.session.commit()
             token = generate_token(user.coordinator_id, "coordinator")
             response = make_response(redirect('/coordinator/faculty_approvement'))
-            set_access_cookies(response, token)  # Store JWT in a cookie
+            set_access_cookies(response, token) 
             return response
     return render_template('/auth/login_coordinator.html')
 
 @bp.route('/logout')
 def logout():
     response = make_response(redirect('/')) 
-    # Clear session data
     session.pop('user_id', None)
     unset_jwt_cookies(response)
     return response
