@@ -1,21 +1,247 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}SRIP Portal{% endblock %}</title>
-    <link rel="icon" type="image/x-icon" href="/app/static/favicon.png">
-    <meta name="description" content="SRIP Portal for managing interns, faculty, and projects.">
-    <meta name="keywords" content="SRIP, Portal, Interns, Faculty, Projects">
-    <meta name="author" content="Naveen-Pal">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    {% include "header.html" %}
-    <main class="container mt-5">
-        {% block content %}Status{% endblock %}
-    </main>
-    {% include "footer.html" %}
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Selected Intern Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 mb-0">Welcome, {{ user_obj.full_name }}</h1>
+            <p class="text-muted">Manage your research internship</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <span class="badge bg-success fs-6">Selected Intern</span>
+        </div>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-4 mb-lg-0">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Project Information</h5>
+                </div>
+                <div class="card-body">
+                    <h4 class="mb-3">{{ project.project_title }}</h4>
+                    <p class="mb-4">{{ project.project_description }}</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted mb-1">Faculty Mentor</h6>
+                            <p class="mb-0">{{ faculty.full_name }}</p>
+                            <p class="mb-0"><a href="mailto:{{ faculty.email }}">{{ faculty.email }}</a></p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted mb-1">Project ID</h6>
+                            <p class="mb-0">{{ project.project_id }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Research Proposal</h5>
+                </div>
+                <div class="card-body">
+                    {% if research_proposal %}
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <span class="badge bg-success">Submitted</span>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ research_proposal.title }}</h6>
+                                <small class="text-muted">Submitted on {{ research_proposal.submission_date.strftime('%d %B %Y') }}</small>
+                            </div>
+                        </div>
+                        <p class="mb-3">{{ research_proposal.abstract|truncate(100) }}</p>
+                        <div class="d-grid">
+                            <a href="/selected_intern/research_proposal" class="btn btn-outline-primary">View Proposal</a>
+                        </div>
+                        {% if research_proposal.status != 'pending' %}
+                            <div class="mt-3">
+                                <span class="badge {% if research_proposal.status == 'approved' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ research_proposal.status|capitalize }}
+                                </span>
+                                {% if research_proposal.feedback %}
+                                    <p class="small mt-2 mb-0">{{ research_proposal.feedback|truncate(100) }}</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p class="mb-3">You haven't submitted your research proposal yet.</p>
+                        <div class="d-grid gap-2">
+                            <a href="/selected_intern/research_proposal" class="btn btn-primary">
+                                Submit Research Proposal
+                            </a>
+                        </div>
+                        <small class="text-muted mt-2 d-block">Your research proposal needs to be submitted within one week of project allocation.</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Weekly Submissions</h5>
+                    <a href="/selected_intern/weekly_submissions" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <h6 class="mb-1">Tuesday Report</h6>
+                            {% set tuesday_exists = false %}
+                            {% for submission in weekly_submissions %}
+                                {% if submission.submission_type == 'tuesday' and not tuesday_exists %}
+                                    {% set tuesday_exists = true %}
+                                    <small class="text-muted">Last submitted: {{ submission.submission_date.strftime('%d %b %Y') }}</small>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not tuesday_exists %}
+                                <small class="text-muted">No submissions yet</small>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="/selected_intern/weekly_submission/tuesday" class="btn btn-sm btn-outline-primary">Submit</a>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="mb-1">Friday Report</h6>
+                            {% set friday_exists = false %}
+                            {% for submission in weekly_submissions %}
+                                {% if submission.submission_type == 'friday' and not friday_exists %}
+                                    {% set friday_exists = true %}
+                                    <small class="text-muted">Last submitted: {{ submission.submission_date.strftime('%d %b %Y') }}</small>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not friday_exists %}
+                                <small class="text-muted">No submissions yet</small>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="/selected_intern/weekly_submission/friday" class="btn btn-sm btn-outline-primary">Submit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Milestone Submissions</h5>
+                    <a href="/selected_intern/milestone_submissions" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <h6 class="mb-1">Midterm Submission</h6>
+                            {% set midterm_exists = false %}
+                            {% for submission in milestone_submissions %}
+                                {% if submission.submission_type == 'midterm' and not midterm_exists %}
+                                    {% set midterm_exists = true %}
+                                    <small class="text-muted">
+                                        {% if submission.rating %}
+                                            Rated: {{ submission.rating }}/5
+                                        {% else %}
+                                            Submitted: {{ submission.submission_date.strftime('%d %b %Y') }}
+                                        {% endif %}
+                                    </small>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not midterm_exists %}
+                                <small class="text-muted">Not submitted yet</small>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="/selected_intern/milestone_submission/midterm" class="btn btn-sm btn-outline-primary">
+                                {% if midterm_exists %}View{% else %}Submit{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="mb-1">Pre-Final Submission</h6>
+                            {% set prefinal_exists = false %}
+                            {% for submission in milestone_submissions %}
+                                {% if submission.submission_type == 'pre_final' and not prefinal_exists %}
+                                    {% set prefinal_exists = true %}
+                                    <small class="text-muted">
+                                        {% if submission.rating %}
+                                            Rated: {{ submission.rating }}/5
+                                        {% else %}
+                                            Submitted: {{ submission.submission_date.strftime('%d %b %Y') }}
+                                        {% endif %}
+                                    </small>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not prefinal_exists %}
+                                <small class="text-muted">Not submitted yet</small>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="/selected_intern/milestone_submission/pre_final" class="btn btn-sm btn-outline-primary">
+                                {% if prefinal_exists %}View{% else %}Submit{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Quick Links</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="/selected_intern/research_proposal" class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-file-earmark-text mb-2"></i><br>
+                                Research Proposal
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="/selected_intern/weekly_submissions" class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-calendar-week mb-2"></i><br>
+                                Weekly Reports
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="/selected_intern/milestone_submissions" class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-flag mb-2"></i><br>
+                                Milestones
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('selected_intern.profile') }}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-person mb-2"></i><br>
+                                My Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

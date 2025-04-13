@@ -10,6 +10,7 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+<<<<<<< HEAD
                     {% if session.get('user_type') == 0 %}
                     <li class="nav-item"><a class="nav-link" href="/auth/logout">logout</a></li>
                     
@@ -20,17 +21,55 @@
                     <li class="nav-item"><a class="nav-link" href="/auth/register">Register</a></li>
                     <li class="nav-item"><a class="nav-link" href="/prospective_intern/status">Internship Status</a></li>
                     <li class="nav-item"><a class="nav-link" href="/prospective_intern/projects">Projects</a></li>
+=======
+                    {% if user_type == 4 %}
+                        <!-- Selected Intern Navigation -->
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('selected_intern.dashboard') }}">Dashboard</a></li>
+                    {% elif user_type == 1 %}
+                        <!-- Faculty Navigation -->
+                        <li class="nav-item"><a class="nav-link" href="/faculty/add_project">Add Project</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/faculty/projects">My Projects</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/faculty/applications">Applications</a></li>
+                    {% elif user_type == 2 %}
+                        <!-- Coordinator Navigation -->
+                        <li class="nav-item"><a class="nav-link" href="/coordinator/">Coordinator Panel</a></li>
+>>>>>>> dbc47f20582d9a7ed8a66662f89a68f595b06d3e
                     {% else %}
-                    <li class="nav-item"><a class="nav-link" href="/auth/register">Register</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/prospective_intern/projects">Projects</a></li>
+                        <!-- Unauthenticated or Prospective Intern Navigation -->
+                        <li class="nav-item"><a class="nav-link" href="/prospective_intern/projects">Browse Projects</a></li>
+                        {% if user_type == 3 %}
+                            <li class="nav-item"><a class="nav-link" href="/prospective_intern/my_applications">My Applications</a></li>
+                        {% endif %}
                     {% endif %}
-                    {% if session.get('user_id') %}
-                    <li class="nav-item"><a class="nav-link" href="/auth/logout">Logout</a></li>
-                    {% endif %}
-                    {% if not session.get('user_id') %}
-                    <li class="nav-item"><a class="nav-link" href="/auth/register?type=prospective_intern">Intern Register</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/auth/register?type=faculty">Faculty Register</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/auth/register?type=coordinator">Coordinator Register</a></li>
+                    
+                    {% if user_id %}
+                        <li class="nav-item"><a class="nav-link" href="/auth/logout">Logout</a></li>
+                        {% if user_obj %}
+                        <li class="nav-item">
+                            <span class="nav-link">{{ user_obj.full_name }}</span>
+                        </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="registerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Register
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="registerDropdown">
+                                <li><a class="dropdown-item" href="/auth/register?type=intern">Intern</a></li>
+                                <li><a class="dropdown-item" href="/auth/register?type=faculty">Faculty</a></li>
+                                <li><a class="dropdown-item" href="/auth/register?type=coordinator">Coordinator</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="loginDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Login
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="loginDropdown">
+                                <li><a class="dropdown-item" href="/auth/intern">Intern</a></li>
+                                <li><a class="dropdown-item" href="/auth/faculty">Faculty</a></li>
+                                <li><a class="dropdown-item" href="/auth/coordinator">Coordinator</a></li>
+                            </ul>
+                        </li>
                     {% endif %}
                 </ul>
             </div>

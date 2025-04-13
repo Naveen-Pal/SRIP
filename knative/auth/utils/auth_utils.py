@@ -19,7 +19,7 @@ def login_required(user_type):
                     return redirect('/auth/faculty')
                 elif (user_type == 2):
                     return redirect('/auth/coordinator')
-                elif (user_type == 0):
+                elif (user_type == 4):
                     return redirect('/auth/intern')
                 else:
                     return redirect('/')

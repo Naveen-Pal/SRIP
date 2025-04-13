@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Applications{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/faculty/">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Applications</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 mb-0">Applications</h1>
+            <p class="text-muted">Review and shortlist intern applications</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Filter Applications</h5>
+                </div>
+                <div class="card-body">
+                    <form action="" method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="status" class="form-label">Status</label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Status</option>
+                                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                                <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="project_id" class="form-label">Project</label>
+                            <select name="project_id" id="project_id" class="form-select">
+                                <option value="all" {% if project_filter == 'all' %}selected{% endif %}>All Projects</option>
+                                {% for project in projects %}
+                                    <option value="{{ project.project_id }}" {% if project_filter == project.project_id|string %}selected{% endif %}>
+                                        {{ project.project_title }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        Applications
+                        {% if status_filter != 'all' %}
+                            <span class="badge bg-secondary">{{ status_filter }}</span>
+                        {% endif %}
+                        {% if project_filter != 'all' %}
+                            {% for project in projects %}
+                                {% if project.project_id|string == project_filter %}
+                                    <span class="badge bg-info">{{ project.project_title }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>College</th>
+                                    <th>Project</th>
+                                    <th>Submitted</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if applications %}
+                                    {% for application, intern, project in applications %}
+                                        <tr>
+                                            <td>{{ intern.full_name }}</td>
+                                            <td>{{ intern.college_name }}</td>
+                                            <td>{{ project.project_title | truncate(30) }}</td>
+                                            <td>{{ application.time_stamp.strftime('%d %b %Y') }}</td>
+                                            <td>
+                                                {% if application.status == 'pending' %}
+                                                    <span class="badge bg-warning">Pending</span>
+                                                {% elif application.status == 'approved' %}
+                                                    <span class="badge bg-success">Approved</span>
+                                                {% elif application.status == 'rejected' %}
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="/faculty/application/{{ application.application_id }}" class="btn btn-sm btn-outline-primary">Review</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center py-3">No applications found matching your criteria.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
