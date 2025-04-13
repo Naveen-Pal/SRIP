@@ -43,7 +43,7 @@
                         <td style="padding: 12px 15px; width: 40%;">{{ project.project_description }}</td>
                         <td style="padding: 12px 15px;">{{ project.faculty_name }}</td>
                         <td style="padding: 12px 15px;">
-                            {% if session.get('user_id') %}
+                            {% if user_id %}
                                 <button type="button" 
                                    class="btn btn-primary btn-sm apply-btn" 
                                    data-bs-toggle="modal" 
@@ -56,7 +56,7 @@
                                     Apply
                                 </button>
                             {% else %}
-                                <a href="/auth/intern" class="btn btn-outline-primary btn-sm">
+                                <a href="/auth/prospective_intern" class="btn btn-outline-primary btn-sm">
                                     Log in to Apply
                                 </a>
                             {% endif %}
@@ -255,6 +255,7 @@
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                     },
+                    credentials: 'same-origin'
                 })
                 .then(response => response.json())
                 .then(data => {

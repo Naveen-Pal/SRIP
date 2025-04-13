@@ -1,10 +1,12 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
+from flask_jwt_extended import get_jwt_identity
+
 from app.models.application import ApplicationForm
 from app.models.intern import InternDetail
 from app import db
 from app.models.faculty import Faculty
 from app.models.project import Project
-from app.utils.auth_utils import login_required
+from app.utils.auth_utils import role_required
 
 bp = Blueprint('prospective_intern', __name__, url_prefix='/prospective_intern')
 
@@ -21,7 +23,7 @@ def projects():
             "project_title": p.project_title,
             "project_description": p.project_description,
             "faculty_name": faculty_name,
-            "faculty_id": p.faculty_id  # Add faculty_id to pass to the modal
+            "faculty_id": p.faculty_id
         })
     
     project_list = sorted(project_list, key=lambda x: x["project_id"])
@@ -29,9 +31,9 @@ def projects():
     return render_template('intern/projects.html', projects=project_list)
 
 @bp.route('/my_applications', methods=['GET'])
-@login_required(3)  # User type 3 for prospective interns
+@role_required('prospective_intern')
 def my_applications():
-    intern_id = session.get('user_id')
+    intern_id = get_jwt_identity()
     
     # Get all applications by this intern with project and faculty details
     applications = db.session.query(ApplicationForm, Project, Faculty)\
@@ -56,15 +58,15 @@ def my_applications():
     return render_template('intern/applied_projects.html', applications=application_list)
 
 @bp.route('/status', methods=['GET'])
-@login_required(3)  # User type 3 for prospective interns
+@role_required('prospective_intern')  # User type 3 for prospective interns
 def status():
     return redirect('/prospective_intern/my_applications')
 
 @bp.route('/submit_application', methods=['POST'])
-@login_required(3)
+@role_required('prospective_intern')
 def submit_application():
     """AJAX endpoint for submitting project applications."""
-    intern_id = session.get('user_id')
+    intern_id = get_jwt_identity()
     if not intern_id:
         return jsonify({
             'success': False,

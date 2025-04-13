@@ -27,10 +27,27 @@
         this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logging out...';
         this.disabled = true;
         
-        // Redirect after a short delay to show the spinner
-        setTimeout(function() {
-            window.location.href = "/auth/logout";
-        }, 800);
+        // Send request to delete the JWT token
+        fetch('/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (response.ok) {
+                // Redirect to home page after successful logout
+                window.location.href = "/";
+            } else {
+                console.error('Logout failed');
+                window.location.href = "/";
+            }
+        })
+        .catch(error => {
+            console.error('Error during logout:', error);
+            window.location.href = "/";
+        });
     });
 </script>
 {% endblock %}

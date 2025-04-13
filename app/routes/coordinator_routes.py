@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify
-from app.utils.auth_utils import login_required
+from app.utils.auth_utils import role_required
 from app.models.faculty import Faculty
 from app.models.project import Project
 from app.models.application import ApplicationForm
@@ -11,7 +11,7 @@ from sqlalchemy import or_, and_, func
 bp = Blueprint('coordinator', __name__, url_prefix='/coordinator')
 
 @bp.route('/')
-@login_required(2)
+@role_required('coordinator')
 def dashboard():
     """Main coordinator dashboard"""
     faculty_count = Faculty.query.count()
@@ -30,7 +30,7 @@ def dashboard():
                           pending_count=pending_count)
 
 @bp.route('/faculty_list')
-@login_required(2)
+@role_required('coordinator')
 def faculty_list():
     """List all faculty with their projects and applicants"""
     search = request.args.get('search', '')
@@ -79,7 +79,7 @@ def faculty_list():
                           order=order)
 
 @bp.route('/faculty/<int:faculty_id>/projects')
-@login_required(2)
+@role_required('coordinator')
 def faculty_projects(faculty_id):
     """Show all projects for a specific faculty"""
     faculty = Faculty.query.get_or_404(faculty_id)
@@ -108,7 +108,7 @@ def faculty_projects(faculty_id):
                           project_data=project_data)
 
 @bp.route('/interns')
-@login_required(2)
+@role_required('coordinator')
 def interns_list():
     """List all interns with filtering options"""
     search = request.args.get('search', '')
@@ -193,7 +193,7 @@ def interns_list():
                           order=order)
 
 @bp.route('/applications')
-@login_required(2)
+@role_required('coordinator')
 def applications_list():
     """List all applications with filtering options"""
     search = request.args.get('search', '')
@@ -271,7 +271,7 @@ def applications_list():
                           order=order)
 
 @bp.route('/toggle_selection/<int:intern_id>', methods=['POST'])
-@login_required(2)
+@role_required('coordinator')
 def toggle_selection(intern_id):
     """Toggle the selection status of an intern"""
     intern = InternDetail.query.get_or_404(intern_id)
@@ -281,7 +281,7 @@ def toggle_selection(intern_id):
     return redirect(request.referrer)
 
 @bp.route('/email_selected_interns', methods=['GET', 'POST'])
-@login_required(2)
+@role_required('coordinator')
 def email_selected_interns():
     """Email selected interns"""
     if request.method == 'POST':
@@ -308,7 +308,7 @@ def email_selected_interns():
     return render_template('coordinator/email_selected_interns.html', recipient_type="Selected Interns")
 
 @bp.route('/email_waitlisted_interns', methods=['GET', 'POST'])
-@login_required(2)
+@role_required('coordinator')
 def email_waitlisted_interns():
     """Email waitlisted interns"""
     if request.method == 'POST':
@@ -335,7 +335,7 @@ def email_waitlisted_interns():
     return render_template('coordinator/email_selected_interns.html', recipient_type="Waitlisted Interns")
 
 @bp.route('/confirm_participation/<int:intern_id>', methods=['POST'])
-@login_required(2)
+@role_required('coordinator')
 def confirm_participation(intern_id):
     """Manually confirm an intern's participation"""
     intern = InternDetail.query.get_or_404(intern_id)
@@ -345,13 +345,13 @@ def confirm_participation(intern_id):
     return redirect(request.referrer)
 
 @bp.route('/email_faculty')
-@login_required(2)
+@role_required('coordinator')
 def email_faculty():
     """Email selected interns"""
     return render_template('coordinator/email_selected_interns.html', recipient_type="Faculty")
 
 @bp.route('/add_faculty', methods=['GET', 'POST'])
-@login_required(2)
+@role_required('coordinator')
 def add_faculty():
     """Add a new faculty member"""
     if request.method == 'POST':
@@ -381,7 +381,7 @@ def add_faculty():
     return render_template('coordinator/add_faculty.html')
 
 @bp.route('/faculty_approvement', methods=['GET', 'POST'])
-@login_required(2)
+@role_required('coordinator')
 def faculty_approvement():
     """Approve or reject faculty"""
     try:

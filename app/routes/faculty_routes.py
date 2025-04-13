@@ -1,23 +1,26 @@
-from flask import Blueprint, render_template, request, redirect, flash, session
-from app.utils.auth_utils import login_required
-from app.models.project import Project
-from app.models.faculty import Faculty
+from datetime import datetime
+
+from flask import Blueprint, flash, redirect, render_template, request
+from flask_jwt_extended import get_jwt_identity
+from sqlalchemy import and_, func, or_
+
+from app import db
 from app.models.application import ApplicationForm
+from app.models.faculty import Faculty
 from app.models.intern import InternDetail
+from app.models.milestone_submission import MilestoneSubmission
+from app.models.project import Project
 from app.models.research_proposal import ResearchProposal
 from app.models.weekly_submission import WeeklySubmission
-from app.models.milestone_submission import MilestoneSubmission
-from app import db
-from datetime import datetime
-from sqlalchemy import and_, or_, func
+from app.utils.auth_utils import role_required
 
 bp = Blueprint('faculty', __name__, url_prefix='/faculty')
 
 @bp.route('/')
-@login_required(1)
+@role_required('faculty')
 def dashboard():
     """Faculty dashboard displaying an overview of projects and applications"""
-    faculty_id = session.get('user_id')
+    faculty_id = get_jwt_identity()
     faculty = Faculty.query.get_or_404(faculty_id)
     
     projects = Project.query.filter_by(faculty_id=faculty_id).all()
@@ -64,18 +67,17 @@ def dashboard():
                           recent_milestone_submissions=recent_milestone_submissions)
 
 @bp.route('/add_project', methods=['GET', 'POST'])
-@login_required(1)
+@role_required('faculty')
 def add_project():
     """Add a new project"""
     if request.method == 'POST':
-        faculty_id = session.get('user_id')
+        faculty_id = get_jwt_identity()
         faculty = Faculty.query.get_or_404(faculty_id)
         
         project_title = request.form.get('project_title')
         project_description = request.form.get('project_description')
         number_of_student = request.form.get('number_of_student')
         faculty_email = request.form.get('faculty_email')
-        project_code = request.form.get('project_code')
         
         new_project = Project(
             project_title=project_title,
@@ -83,7 +85,7 @@ def add_project():
             number_of_student=int(number_of_student),
             faculty_email=faculty_email,
             faculty_id=faculty_id,
-            project_mode="remote",  # Default mode
+            project_mode="remote"  # Default mode
         )
         
         db.session.add(new_project)
@@ -95,10 +97,10 @@ def add_project():
     return render_template('faculty/add_project.html')
 
 @bp.route('/projects')
-@login_required(1)
+@role_required('faculty')
 def projects():
     """View all projects created by the faculty"""
-    faculty_id = session.get('user_id')
+    faculty_id = get_jwt_identity()
     projects = Project.query.filter_by(faculty_id=faculty_id).all()
     
     project_data = []
@@ -123,10 +125,10 @@ def projects():
     return render_template('faculty/projects.html', project_data=project_data)
 
 @bp.route('/project/<int:project_id>')
-@login_required(1)
+@role_required('faculty')
 def view_project(project_id):
     """View details of a specific project"""
-    faculty_id = session.get('user_id')
+    faculty_id = get_jwt_identity()
     project = Project.query.filter_by(project_id=project_id, faculty_id=faculty_id).first_or_404()
     
     # Get all applications for this project
@@ -139,10 +141,10 @@ def view_project(project_id):
                           applications=applications)
 
 @bp.route('/applications')
-@login_required(1)
+@role_required('faculty')
 def applications():
     """View all applications for faculty's projects with filtering"""
-    faculty_id = session.get('user_id')
+    faculty_id = get_jwt_identity()
     status_filter = request.args.get('status', 'all')
     project_filter = request.args.get('project_id', 'all')
     
@@ -173,10 +175,10 @@ def applications():
                           project_filter=project_filter)
 
 @bp.route('/application/<int:application_id>', methods=['GET', 'POST'])
-@login_required(1)
+@role_required('faculty')
 def application_detail(application_id):
     """View and process a specific application"""
-    faculty_id = session.get('user_id')
+    faculty_id = get_jwt_identity()
     
     # Get application with intern and project details
     application_data = db.session.query(ApplicationForm, InternDetail, Project).\
@@ -214,10 +216,10 @@ def application_detail(application_id):
                           project=project)
 
 @bp.route('/research_proposals')
-@login_required(1)
+@role_required('faculty')
 def research_proposals():
     """View all research proposals with filtering"""
-    faculty_id = session.get('user_id')
+    faculty_id = get_jwt_identity()
     status_filter = request.args.get('status', 'all')
     project_filter = request.args.get('project_id', 'all')
     
@@ -247,10 +249,10 @@ def research_proposals():
                           project_filter=project_filter)
 
 @bp.route('/research_proposal/<int:proposal_id>', methods=['GET', 'POST'])
-@login_required(1)
+@role_required('faculty')
 def research_proposal_detail(proposal_id):
     """View and process a specific research proposal"""
-    faculty_id = session.get('user_id')
+    faculty_id = get_jwt_identity()
     
     # Get proposal with intern and project details
     proposal_data = db.session.query(ResearchProposal, InternDetail, Project).\
@@ -280,10 +282,10 @@ def research_proposal_detail(proposal_id):
                           project=project)
 
 @bp.route('/weekly_submissions')
-@login_required(1)
+@role_required('faculty')
 def weekly_submissions():
     """View all weekly submissions with filtering"""
-    faculty_id = session.get('user_id')
+    faculty_id = get_jwt_identity()
     status_filter = request.args.get('status', 'all')  # rated, unrated
     type_filter = request.args.get('type', 'all')  # tuesday, friday
     project_filter = request.args.get('project_id', 'all')
@@ -323,10 +325,10 @@ def weekly_submissions():
                           project_filter=project_filter)
 
 @bp.route('/weekly_submission/<int:submission_id>', methods=['GET', 'POST'])
-@login_required(1)
+@role_required('faculty')
 def weekly_submission_detail(submission_id):
     """View and rate a specific weekly submission"""
-    faculty_id = session.get('user_id')
+    faculty_id = get_jwt_identity()
     
     # Get submission with intern and project details
     submission_data = db.session.query(WeeklySubmission, InternDetail, Project).\
@@ -356,10 +358,10 @@ def weekly_submission_detail(submission_id):
                           project=project)
 
 @bp.route('/milestone_submissions')
-@login_required(1)
+@role_required('faculty')
 def milestone_submissions():
     """View all milestone submissions with filtering"""
-    faculty_id = session.get('user_id')
+    faculty_id = get_jwt_identity()
     status_filter = request.args.get('status', 'all')  # rated, unrated
     type_filter = request.args.get('type', 'all')  # midterm, pre_final
     project_filter = request.args.get('project_id', 'all')
@@ -399,10 +401,10 @@ def milestone_submissions():
                           project_filter=project_filter)
 
 @bp.route('/milestone_submission/<int:submission_id>', methods=['GET', 'POST'])
-@login_required(1)
+@role_required('faculty')
 def milestone_submission_detail(submission_id):
     """View and rate a specific milestone submission"""
-    faculty_id = session.get('user_id')
+    faculty_id = get_jwt_identity()
     
     # Get submission with intern and project details
     submission_data = db.session.query(MilestoneSubmission, InternDetail, Project).\
@@ -432,10 +434,10 @@ def milestone_submission_detail(submission_id):
                           project=project)
 
 @bp.route('/profile')
-@login_required(1)
+@role_required('faculty')
 def profile():
-    """View and edit faculty profile"""
-    faculty_id = session.get('user_id')
+    """View faculty profile"""
+    faculty_id = get_jwt_identity()
     faculty = Faculty.query.get_or_404(faculty_id)
     
     return render_template('faculty/profile.html', faculty=faculty)

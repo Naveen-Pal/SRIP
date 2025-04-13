@@ -1,23 +1,26 @@
-from flask import Blueprint, render_template, request, redirect, flash, session
-from app.utils.auth_utils import login_required
-from app.models.intern import InternDetail
-from app.models.faculty import Faculty
-from app.models.project import Project
-from app.models.application import ApplicationForm
-from app.models.research_proposal import ResearchProposal
-from app.models.weekly_submission import WeeklySubmission
-from app.models.milestone_submission import MilestoneSubmission
-from app import db
 from datetime import datetime, timedelta
 import os
+
+from flask import Blueprint, flash, redirect, render_template, request
+from flask_jwt_extended import get_jwt_identity
 from werkzeug.utils import secure_filename
+
+from app import db
+from app.models.application import ApplicationForm
+from app.models.faculty import Faculty
+from app.models.intern import InternDetail
+from app.models.milestone_submission import MilestoneSubmission
+from app.models.project import Project
+from app.models.research_proposal import ResearchProposal
+from app.models.weekly_submission import WeeklySubmission
+from app.utils.auth_utils import role_required
 
 bp = Blueprint('selected_intern', __name__, url_prefix='/selected_intern')
 
 @bp.route('/')
-@login_required(4)
+@role_required('selected_intern')
 def dashboard():
-    intern_id = session.get('user_id')
+    intern_id = get_jwt_identity()
     intern = InternDetail.query.get_or_404(intern_id)
     
     # Get application and project details
@@ -26,7 +29,7 @@ def dashboard():
     if not application:
         return render_template('intern/not_selected.html')
     
-    project_id = application.project_code  # No need for int() conversion
+    project_id = application.project_code
     project = Project.query.get_or_404(project_id)
     faculty = Faculty.query.get_or_404(project.faculty_id)
     
@@ -57,14 +60,14 @@ def dashboard():
                           milestone_submissions=milestone_submissions)
 
 @bp.route('/home')
-@login_required(4)
+@role_required('selected_intern')
 def home():
     return redirect('/selected_intern/')
 
 @bp.route('/research_proposal', methods=['GET', 'POST'])
-@login_required(4)
+@role_required('selected_intern')
 def research_proposal():
-    intern_id = session.get('user_id')
+    intern_id = get_jwt_identity()
     intern = InternDetail.query.get_or_404(intern_id)
     
     # Get application and project details
@@ -73,7 +76,7 @@ def research_proposal():
     if not application:
         return redirect('/selected_intern')
     
-    project_id = application.project_code  # No need for int() conversion
+    project_id = application.project_code
     project = Project.query.get_or_404(project_id)
     faculty = Faculty.query.get_or_404(project.faculty_id)
     
@@ -113,9 +116,9 @@ def research_proposal():
                           proposal=existing_proposal)
 
 @bp.route('/weekly_submissions')
-@login_required(4)
+@role_required('selected_intern')
 def weekly_submissions_list():
-    intern_id = session.get('user_id')
+    intern_id = get_jwt_identity()
     intern = InternDetail.query.get_or_404(intern_id)
     
     # Get application and project details
@@ -124,7 +127,7 @@ def weekly_submissions_list():
     if not application:
         return redirect('/selected_intern')
     
-    project_id = application.project_code  # No need for int() conversion
+    project_id = application.project_code
     project = Project.query.get_or_404(project_id)
     
     # Get all weekly submissions
@@ -139,13 +142,13 @@ def weekly_submissions_list():
                           submissions=submissions)
 
 @bp.route('/weekly_submission/<submission_type>', methods=['GET', 'POST'])
-@login_required(4)
+@role_required('selected_intern')
 def weekly_submission(submission_type):
     if submission_type not in ['tuesday', 'friday']:
         flash('Invalid submission type', 'danger')
         return redirect('/selected_intern/weekly_submissions')
     
-    intern_id = session.get('user_id')
+    intern_id = get_jwt_identity()
     intern = InternDetail.query.get_or_404(intern_id)
     
     # Get application and project details
@@ -154,7 +157,7 @@ def weekly_submission(submission_type):
     if not application:
         return redirect('/selected_intern')
     
-    project_id = application.project_code  # No need for int() conversion
+    project_id = application.project_code
     project = Project.query.get_or_404(project_id)
     faculty = Faculty.query.get_or_404(project.faculty_id)
     
@@ -200,9 +203,9 @@ def weekly_submission(submission_type):
                           existing_submission=existing_submission)
 
 @bp.route('/milestone_submissions')
-@login_required(4)
+@role_required('selected_intern')
 def milestone_submissions_list():
-    intern_id = session.get('user_id')
+    intern_id = get_jwt_identity()
     intern = InternDetail.query.get_or_404(intern_id)
     
     # Get application and project details
@@ -211,7 +214,7 @@ def milestone_submissions_list():
     if not application:
         return redirect('/selected_intern')
     
-    project_id = application.project_code  # No need for int() conversion
+    project_id = application.project_code
     project = Project.query.get_or_404(project_id)
     
     # Get all milestone submissions
@@ -226,13 +229,13 @@ def milestone_submissions_list():
                           submissions=submissions)
 
 @bp.route('/milestone_submission/<submission_type>', methods=['GET', 'POST'])
-@login_required(4)
+@role_required('selected_intern')
 def milestone_submission(submission_type):
     if submission_type not in ['midterm', 'pre_final']:
         flash('Invalid submission type', 'danger')
         return redirect('/selected_intern/milestone_submissions')
     
-    intern_id = session.get('user_id')
+    intern_id = get_jwt_identity()
     intern = InternDetail.query.get_or_404(intern_id)
     
     # Get application and project details
@@ -241,7 +244,7 @@ def milestone_submission(submission_type):
     if not application:
         return redirect('/selected_intern')
     
-    project_id = application.project_code  # No need for int() conversion
+    project_id = application.project_code
     project = Project.query.get_or_404(project_id)
     faculty = Faculty.query.get_or_404(project.faculty_id)
     
@@ -293,9 +296,9 @@ def milestone_submission(submission_type):
                           existing_submission=existing_submission)
 
 @bp.route('/profile')
-@login_required(4)
+@role_required('selected_intern')
 def profile():
-    intern_id = session.get('user_id')
+    intern_id = get_jwt_identity()
     intern = InternDetail.query.get_or_404(intern_id)
     
     return render_template('intern/profile.html', intern=intern)
