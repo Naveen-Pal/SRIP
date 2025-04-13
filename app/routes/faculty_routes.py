@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-from flask import Blueprint, render_template
-from app.utils.auth_utils import login_required
-from app.utils.auth_middleware import role_required
-
-bp = Blueprint('faculty', __name__, url_prefix='/faculty')
-
-
-@bp.route('/add_project')
-@role_required("faculty")
-=======
 from datetime import datetime
 
 from flask import Blueprint, flash, redirect, render_template, request
@@ -79,7 +68,6 @@ def dashboard():
 
 @bp.route('/add_project', methods=['GET', 'POST'])
 @role_required('faculty')
->>>>>>> dbc47f20582d9a7ed8a66662f89a68f595b06d3e
 def add_project():
     """Add a new project"""
     if request.method == 'POST':

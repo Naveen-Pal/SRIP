@@ -10,18 +10,6 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-<<<<<<< HEAD
-                    {% if session.get('user_type') == 0 %}
-                    <li class="nav-item"><a class="nav-link" href="/auth/logout">logout</a></li>
-                    
-                    {% elif session.get('user_type') == 1 %}
-                    <li class="nav-item"><a class="nav-link" href="/faculty/add_project">Add Project</a></li>
-                    {% elif session.get('user_type') == 2 %}
-                    {% elif session.get('user_type') == 3 %}
-                    <li class="nav-item"><a class="nav-link" href="/auth/register">Register</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/prospective_intern/status">Internship Status</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/prospective_intern/projects">Projects</a></li>
-=======
                     {% if user_type == 4 %}
                         <!-- Selected Intern Navigation -->
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('selected_intern.dashboard') }}">Dashboard</a></li>
@@ -33,7 +21,6 @@
                     {% elif user_type == 2 %}
                         <!-- Coordinator Navigation -->
                         <li class="nav-item"><a class="nav-link" href="/coordinator/">Coordinator Panel</a></li>
->>>>>>> dbc47f20582d9a7ed8a66662f89a68f595b06d3e
                     {% else %}
                         <!-- Unauthenticated or Prospective Intern Navigation -->
                         <li class="nav-item"><a class="nav-link" href="/prospective_intern/projects">Browse Projects</a></li>

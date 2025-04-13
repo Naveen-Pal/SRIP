@@ -6,19 +6,6 @@ from app.models.application import ApplicationForm
 from app.models.intern import InternDetail
 from app.utils.email_utils import send_email
 from app import db
-<<<<<<< HEAD
-from app.utils.auth_middleware import role_required
-
-
-bp = Blueprint('coordinator', __name__, url_prefix='/coordinator')
-
-@bp.route('/email_selected_interns')
-@role_required('coordinator')
-def email_selected_interns():
-    return render_template('coordinator/email_selected_interns.html')
-
-@bp.route('/add_faculty')
-=======
 from sqlalchemy import or_, and_, func
 
 bp = Blueprint('coordinator', __name__, url_prefix='/coordinator')
@@ -364,7 +351,6 @@ def email_faculty():
     return render_template('coordinator/email_selected_interns.html', recipient_type="Faculty")
 
 @bp.route('/add_faculty', methods=['GET', 'POST'])
->>>>>>> dbc47f20582d9a7ed8a66662f89a68f595b06d3e
 @role_required('coordinator')
 def add_faculty():
     """Add a new faculty member"""

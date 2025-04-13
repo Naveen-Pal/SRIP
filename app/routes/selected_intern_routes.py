@@ -17,13 +17,6 @@ from app.utils.auth_utils import role_required
 
 bp = Blueprint('selected_intern', __name__, url_prefix='/selected_intern')
 
-<<<<<<< HEAD
-from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity,get_jwt
-from app.utils.auth_middleware import role_required
-@jwt_required()  # Extracts JWT from cookie
-@bp.route('/home', methods=['GET'])
-@role_required("selected_intern")
-=======
 @bp.route('/')
 @role_required('selected_intern')
 def dashboard():
@@ -68,7 +61,6 @@ def dashboard():
 
 @bp.route('/home')
 @role_required('selected_intern')
->>>>>>> dbc47f20582d9a7ed8a66662f89a68f595b06d3e
 def home():
     return redirect('/selected_intern/')
 
