@@ -3,21 +3,11 @@
 {% block title %}Faculty Login{% endblock %}
 
 {% block content %}
-<<<<<<< HEAD
-<div class="card">
-    <div class="card-body">
-        <h2 class="card-title">Faculty Login</h2>
-        <form action="/auth/faculty" method='POST'>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-=======
 <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
                 <h3 class="card-title mb-0 text-center">Faculty Login</h3>
->>>>>>> dbc47f20582d9a7ed8a66662f89a68f595b06d3e
             </div>
             <div class="card-body p-4">
                 {% with messages = get_flashed_messages(with_categories=true) %}

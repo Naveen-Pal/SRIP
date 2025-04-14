@@ -3,19 +3,8 @@
 {% block title %}Intern Login{% endblock %}
 
 {% block content %}
-<<<<<<< HEAD
-<<<<<<<< HEAD:app/templates/auth/login_selected_intern.html
-<h2>Selected Intern Login</h2>
-<form action="/auth/selected_intern" method="post">
-    <label for="user_mail">Mail:</label>
-    <input type="email" id="user_mail" name="user_mail" required>
-    <label for="user_pass">Password:</label>
-    <input type="password" id="user_pass" name="user_pass" required>
-    <button type="submit">Login</button>
-</form>
-========
-=======
->>>>>>> dbc47f20582d9a7ed8a66662f89a68f595b06d3e
+
+
 <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">
         <div class="card shadow">
@@ -34,11 +23,7 @@
                     {% endif %}
                 {% endwith %}
                 
-<<<<<<< HEAD
-                <form action="/auth/prospective_intern" method="post">
-=======
                 <form action="/auth/selected_intern" method="post">
->>>>>>> dbc47f20582d9a7ed8a66662f89a68f595b06d3e
                     <div class="mb-3">
                         <label for="user_mail" class="form-label">Email Address</label>
                         <div class="input-group">
@@ -64,8 +49,4 @@
         </div>
     </div>
 </div>
-<<<<<<< HEAD
->>>>>>>> dbc47f20582d9a7ed8a66662f89a68f595b06d3e:app/templates/auth/login_intern.html
-=======
->>>>>>> dbc47f20582d9a7ed8a66662f89a68f595b06d3e
 {% endblock %}
