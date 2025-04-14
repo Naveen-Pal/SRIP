@@ -10,33 +10,32 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    {% if user_type == 4 %}
-                        <!-- Selected Intern Navigation -->
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('selected_intern.dashboard') }}">Dashboard</a></li>
-                    {% elif user_type == 1 %}
-                        <!-- Faculty Navigation -->
-                        <li class="nav-item"><a class="nav-link" href="/faculty/add_project">Add Project</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/faculty/projects">My Projects</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/faculty/applications">Applications</a></li>
-                    {% elif user_type == 2 %}
-                        <!-- Coordinator Navigation -->
-                        <li class="nav-item"><a class="nav-link" href="/coordinator/">Coordinator Panel</a></li>
-                    {% else %}
-                        <!-- Unauthenticated or Prospective Intern Navigation -->
-                        <li class="nav-item"><a class="nav-link" href="/prospective_intern/projects">Browse Projects</a></li>
-                        {% if user_type == 3 %}
-                            <li class="nav-item"><a class="nav-link" href="/prospective_intern/my_applications">My Applications</a></li>
-                        {% endif %}
-                    {% endif %}
-                    
                     {% if user_id %}
-                        <li class="nav-item"><a class="nav-link" href="/auth/logout">Logout</a></li>
-                      {% if user_obj %}
-                        <li class="nav-item">
-                            <span class="nav-link">{{ user_obj.full_name }}</span>
-                        </li>
+                        {% if user_type == "selected_intern" %}
+                            <!-- Selected Intern Navigation -->
+                            <li class="nav-item"><a class="nav-link" href="/selected_intern/">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/auth/logout">Log out</a></li>
+            
+                        {% elif user_type == "faculty" %}
+                            <!-- Faculty Navigation -->
+                            <li class="nav-item"><a class="nav-link" href="/faculty/add_project">Add Project</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/faculty/projects">My Projects</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/faculty/applications">Applications</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/auth/logout">Log out</a></li>
+            
+                        {% elif user_type == "coordinator" %}
+                            <!-- Coordinator Navigation -->
+                            <li class="nav-item"><a class="nav-link" href="/coordinator/">Coordinator Panel</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/auth/logout">Log out</a></li>
+            
+                        {% elif user_type == "prospective_intern" %}
+                            <!-- Prospective Intern Navigation -->
+                            <li class="nav-item"><a class="nav-link" href="/prospective_intern/projects">Browse Projects</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/prospective_intern/my_applications">My Applications</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/auth/logout">Log out</a></li>
                         {% endif %}
                     {% else %}
+                        <!-- Unauthenticated User -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="registerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Register
@@ -61,6 +60,7 @@
                     {% endif %}
                 </ul>
             </div>
+            
         </nav>
     </div>
 </header>

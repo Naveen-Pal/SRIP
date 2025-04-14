@@ -232,8 +232,8 @@ def register():
     return render_template(f'/auth/register_{user_type}.html')
 
 
-@bp.before_request
-def before_request():
+@bp.before_app_request
+def decode_jwt():
     # Check if the JWT is valid and extract user information
     try:
         verify_jwt_in_request()
@@ -258,14 +258,15 @@ def before_request():
         g.user_id = None
         g.user_type = None
         g.user_obj = None
-@bp.context_processor
+@bp.app_context_processor
 def inject_user():
-    print(type(getattr(g, "user_obj", None)))
-    print(getattr(g, "user_id", None))
-    print(getattr(g, "user_type", None))
+    """Inject user information into templates"""
+
     return dict(
         user=getattr(g, "user", None),
         user_id=getattr(g, "user_id", None),
         user_type=getattr(g, "user_type", None),
         user_obj=getattr(g, "user_obj", None)
     )
+
+    
