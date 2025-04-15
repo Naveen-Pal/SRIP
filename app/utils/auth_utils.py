@@ -20,7 +20,7 @@ def generate_token(user_id, role):
     access_token = create_access_token(
         identity=str(user_id),
         additional_claims={"role": role},
-        expires =timedelta(days=1)  # Token expires in 1 day
+        expires_delta = timedelta(days=1)  # Token expires in 1 day
     )
     return access_token
 
