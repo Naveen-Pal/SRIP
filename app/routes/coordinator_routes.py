@@ -29,15 +29,44 @@ def dashboard():
                           selected_count=selected_count,
                           pending_count=pending_count)
 
-@bp.route('/faculty_list')
+@bp.route('/faculty_list', methods=['GET', 'POST'])
 @role_required('coordinator')
 def faculty_list():
     """List all faculty with their projects and applicants"""
+    # Handle POST requests for faculty approval/deletion
+    if request.method == 'POST':
+        print("hello")
+        try:
+            action = request.form.get('action')
+            faculty_id = request.form.get('faculty_id')
+            faculty = Faculty.query.get(faculty_id)
+            
+            if not faculty:
+                return "Faculty not found", 404
+            
+            if action == 'toggle':
+                faculty.allowed = 1 if faculty.allowed == 0 else 0
+                db.session.commit()
+            elif action == 'delete':
+                db.session.delete(faculty)
+                db.session.commit()
+            return redirect('/coordinator/faculty_list')
+        except Exception as e:
+            return f"An error occurred: {str(e)}", 500
+    
+    # Handle GET requests for faculty listing
     search = request.args.get('search', '')
     sort_by = request.args.get('sort', 'faculty_id')
     order = request.args.get('order', 'asc')
+    filter_type = request.args.get('filter', 'all')
     
     query = Faculty.query
+    
+    # Apply filter if provided
+    if filter_type == 'allowed':
+        query = query.filter_by(allowed=1)
+    elif filter_type == 'unallowed':
+        query = query.filter_by(allowed=0)
     
     # Apply search filter if provided
     if search:
@@ -76,7 +105,8 @@ def faculty_list():
                           faculty_data=faculty_data, 
                           search=search,
                           sort_by=sort_by,
-                          order=order)
+                          order=order,
+                          filter_type=filter_type)
 
 @bp.route('/faculty/<int:faculty_id>/projects')
 @role_required('coordinator')
@@ -379,36 +409,3 @@ def add_faculty():
         return redirect('/coordinator/faculty_list')
     
     return render_template('coordinator/add_faculty.html')
-
-@bp.route('/faculty_approvement', methods=['GET', 'POST'])
-@role_required('coordinator')
-def faculty_approvement():
-    """Approve or reject faculty"""
-    try:
-        if request.method == 'POST':
-            action = request.form.get('action')
-            faculty_id = request.form.get('faculty_id')
-            faculty = Faculty.query.get(faculty_id)
-            
-            if not faculty:
-                return "Faculty not found", 404
-            
-            if action == 'toggle':
-                faculty.allowed = 1 if faculty.allowed == 0 else 0
-                db.session.commit()
-            elif action == 'delete':
-                db.session.delete(faculty)
-                db.session.commit()
-            return redirect('/coordinator/faculty_approvement')
-        
-        filter_type = request.args.get('filter', 'all')
-        if filter_type == 'allowed':
-            faculties = Faculty.query.filter_by(allowed=1).all()
-        elif filter_type == 'unallowed':
-            faculties = Faculty.query.filter_by(allowed=0).all()
-        else:
-            faculties = Faculty.query.all()
-        return render_template('coordinator/faculty_approvement.html', faculties=faculties, filter_type=filter_type)
-
-    except Exception as e:
-        return f"An error occurred: {str(e)}", 500

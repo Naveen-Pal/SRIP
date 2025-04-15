@@ -30,19 +30,13 @@ def hash_password(password):
 
 def role_required(required_role):
     """Decorator to check if user has required role"""
+    
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):
             try:
-                # First verify the JWT is valid
                 verify_jwt_in_request(locations=["cookies"])
-                
-                # Then get the JWT claims
                 claims = get_jwt()
-                
-                # Log for debugging
-            
-                # Check if role matches
                 user_role = claims.get("role")
                 
                 if user_role != required_role:
