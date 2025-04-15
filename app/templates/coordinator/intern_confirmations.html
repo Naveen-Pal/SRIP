@@ -8,7 +8,7 @@
         <div class="col-12">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('coordinator.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="/coordinator/">Dashboard</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Intern Confirmations</li>
                 </ol>
             </nav>
@@ -16,7 +16,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>Intern Confirmations</h1>
                 <div>
-                    <a href="{{ url_for('coordinator.email_selected_interns') }}" class="btn btn-primary">
+                    <a href="/coordinator/email_selected_interns" class="btn btn-primary">
                         <i class="fas fa-envelope"></i> Send Reminder Emails
                     </a>
                 </div>
@@ -25,7 +25,7 @@
             <!-- Search and Filters -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <form action="{{ url_for('coordinator.intern_confirmations') }}" method="get" class="row g-3">
+                    <form action="/coordinator/intern_confirmations" method="get" class="row g-3">
                         <div class="col-md-4">
                             <div class="input-group">
                                 <input type="text" name="search" class="form-control" placeholder="Search by name or email" value="{{ search }}">
@@ -108,9 +108,9 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Selected Interns</h5>
                         <div class="btn-group" role="group">
-                            <a href="{{ url_for('coordinator.intern_confirmations', confirmation_status='all') }}" class="btn btn-sm btn-outline-secondary {% if confirmation_status == 'all' %}active{% endif %}">All</a>
-                            <a href="{{ url_for('coordinator.intern_confirmations', confirmation_status='confirmed') }}" class="btn btn-sm btn-outline-success {% if confirmation_status == 'confirmed' %}active{% endif %}">Confirmed</a>
-                            <a href="{{ url_for('coordinator.intern_confirmations', confirmation_status='pending') }}" class="btn btn-sm btn-outline-warning {% if confirmation_status == 'pending' %}active{% endif %}">Pending</a>
+                            <a href="/coordinator/intern_confirmations?confirmation_status=all" class="btn btn-sm btn-outline-secondary {% if confirmation_status == 'all' %}active{% endif %}">All</a>
+                            <a href="/coordinator/intern_confirmations?confirmation_status=confirmed" class="btn btn-sm btn-outline-success {% if confirmation_status == 'confirmed' %}active{% endif %}">Confirmed</a>
+                            <a href="/coordinator/intern_confirmations?confirmation_status=pending" class="btn btn-sm btn-outline-warning {% if confirmation_status == 'pending' %}active{% endif %}">Pending</a>
                         </div>
                     </div>
                 </div>
@@ -147,7 +147,7 @@
                                                 <i class="fas fa-eye"></i> Details
                                             </button>
                                             {% if not item.intern.confirmed %}
-                                            <form method="post" action="{{ url_for('coordinator.confirm_participation', intern_id=item.intern.intern_id) }}" style="display:inline;">
+                                            <form method="post" action="/coordinator/confirm_participation/{{ item.intern.intern_id }}" style="display:inline;">
                                                 <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to manually confirm this intern?')">
                                                     <i class="fas fa-check"></i> Mark Confirmed
                                                 </button>
@@ -190,7 +190,7 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                         {% if not item.intern.confirmed %}
-                                                        <form method="post" action="{{ url_for('coordinator.confirm_participation', intern_id=item.intern.intern_id) }}" style="display:inline;">
+                                                        <form method="post" action="/coordinator/confirm_participation/{{ item.intern.intern_id }}" style="display:inline;">
                                                             <button type="submit" class="btn btn-success">
                                                                 <i class="fas fa-check"></i> Mark as Confirmed
                                                             </button>

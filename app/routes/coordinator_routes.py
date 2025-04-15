@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, redirect
 from app.utils.auth_utils import role_required
 from app.models.faculty import Faculty
 from app.models.project import Project

@@ -8,7 +8,7 @@
         <div class="col-12">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('coordinator.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="/coordinator/">Dashboard</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Faculty List</li>
                 </ol>
             </nav>
@@ -16,7 +16,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>Faculty List</h1>
                 <div>
-                    <a href="{{ url_for('coordinator.add_faculty') }}" class="btn btn-primary">
+                    <a href="/coordinator/add_faculty" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Add Faculty
                     </a>
                 </div>
@@ -25,7 +25,7 @@
             <!-- Search and Filters -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <form action="{{ url_for('coordinator.faculty_list') }}" method="get" class="row g-3">
+                    <form action="/coordinator/faculty_list" method="get" class="row g-3">
                         <div class="col-md-4">
                             <div class="input-group">
                                 <input type="text" name="search" class="form-control" placeholder="Search by name or email" value="{{ search }}">
@@ -65,7 +65,7 @@
                             </button>
                         </div>
                         <div class="col-md-12 text-end">
-                            <a href="{{ url_for('coordinator.faculty_list') }}" class="btn btn-outline-secondary">
+                            <a href="/coordinator/faculty_list" class="btn btn-outline-secondary">
                                 <i class="fas fa-sync"></i> Reset
                             </a>
                         </div>
@@ -103,7 +103,7 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <a href="{{ url_for('coordinator.faculty_projects', faculty_id=item.faculty.faculty_id) }}" class="text-decoration-none">
+                                        <a href="/coordinator/faculty/{{ item.faculty.faculty_id }}/projects" class="text-decoration-none">
                                             {{ item.project_count }} 
                                             <i class="fas fa-external-link-alt small"></i>
                                         </a>
@@ -111,7 +111,7 @@
                                     <td>{{ item.application_count }}</td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="{{ url_for('coordinator.faculty_projects', faculty_id=item.faculty.faculty_id) }}" class="btn btn-sm btn-info">
+                                            <a href="/coordinator/faculty/{{ item.faculty.faculty_id }}/projects" class="btn btn-sm btn-info">
                                                 <i class="fas fa-project-diagram"></i> Projects
                                             </a>
                                             <form method="post" action='/coordinator/faculty_list' style="display:inline;" onsubmit="return confirm('Are you sure you want to {{ 'revoke' if item.faculty.allowed == 1 else 'approve' }} this faculty?');">

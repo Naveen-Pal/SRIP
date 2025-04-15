@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session,flash,jsonify
+from flask import Blueprint, render_template, request, redirect, session,jsonify
 from utils.auth_utils import hash_password, check_password
 from models.faculty import Faculty
 from models.coordinator import Coordinator

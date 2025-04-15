@@ -8,8 +8,8 @@
         <div class="col-12">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('coordinator.dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url_for('coordinator.faculty_list') }}">Faculty List</a></li>
+                    <li class="breadcrumb-item"><a href="/coordinator/">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="/coordinator/faculty_list">Faculty List</a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ faculty.full_name }}'s Projects</li>
                 </ol>
             </nav>
@@ -112,7 +112,7 @@
             <div class="card mt-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Applications</h5>
-                    <a href="{{ url_for('coordinator.applications_list', faculty_id=faculty.faculty_id) }}" class="btn btn-sm btn-outline-primary">
+                    <a href="/coordinator/applications?faculty_id={{ faculty.faculty_id }}" class="btn btn-sm btn-outline-primary">
                         <i class="fas fa-external-link-alt"></i> View All Applications
                     </a>
                 </div>

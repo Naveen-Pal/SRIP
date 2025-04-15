@@ -8,7 +8,7 @@
         <div class="col-12">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('coordinator.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="/coordinator/">Dashboard</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Applications List</li>
                 </ol>
             </nav>
@@ -20,7 +20,7 @@
             <!-- Search and Filters -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <form action="{{ url_for('coordinator.applications_list') }}" method="get" class="row g-3">
+                    <form action="/coordinator/applications" method="get" class="row g-3">
                         <div class="col-md-5">
                             <div class="input-group">
                                 <input type="text" name="search" class="form-control" placeholder="Search by name or email" value="{{ search }}">
@@ -75,7 +75,7 @@
                                     </div>
                                 </div>
                                 
-                                <a href="{{ url_for('coordinator.applications_list') }}" class="btn btn-sm btn-outline-secondary">
+                                <a href="/coordinator/applications" class="btn btn-sm btn-outline-secondary">
                                     <i class="fas fa-sync"></i> Reset Filters
                                 </a>
                             </div>
@@ -139,7 +139,7 @@
                                                 <i class="fas fa-eye"></i> Details
                                             </button>
                                             
-                                            <form method="post" action="{{ url_for('coordinator.toggle_selection', intern_id=item.intern.intern_id) }}" style="display:inline;">
+                                            <form method="post" action="/coordinator/toggle_selection/{{ item.intern.intern_id }}" style="display:inline;">
                                                 <button type="submit" class="btn btn-sm {% if item.intern.isSelected == 1 %}btn-warning{% else %}btn-success{% endif %}" onclick="return confirm('Are you sure you want to {{ 'remove from' if item.intern.isSelected == 1 else 'add to' }} selection?')">
                                                     <i class="fas {% if item.intern.isSelected == 1 %}fa-times{% else %}fa-check{% endif %}"></i> 
                                                     {{ 'Remove' if item.intern.isSelected == 1 else 'Select' }}
@@ -201,7 +201,7 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        <form method="post" action="{{ url_for('coordinator.toggle_selection', intern_id=item.intern.intern_id) }}" style="display:inline;">
+                                                        <form method="post" action="/coordinator/toggle_selection/{{ item.intern.intern_id }}" style="display:inline;">
                                                             <button type="submit" class="btn {% if item.intern.isSelected == 1 %}btn-warning{% else %}btn-success{% endif %}">
                                                                 {{ 'Remove from Selection' if item.intern.isSelected == 1 else 'Select Intern' }}
                                                             </button>

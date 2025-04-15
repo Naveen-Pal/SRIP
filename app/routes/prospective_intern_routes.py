@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
+from flask import Blueprint, render_template, request, redirect, jsonify
 from flask_jwt_extended import get_jwt_identity
 
 from app.models.application import ApplicationForm
