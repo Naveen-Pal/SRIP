@@ -3,4 +3,5 @@ Flask-SQLAlchemy
 Flask-Mail
 python-dotenv
 pymysql
+flask_jwt_extended
 gunicorn

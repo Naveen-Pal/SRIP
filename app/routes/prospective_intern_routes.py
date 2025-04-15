@@ -119,7 +119,6 @@ def submit_application():
         
     except Exception as e:
         db.session.rollback()
-        print(f"Error submitting application: {str(e)}")
         return jsonify({
             'success': False,
             'message': 'An error occurred while submitting your application'
