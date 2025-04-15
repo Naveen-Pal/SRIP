@@ -83,19 +83,29 @@ def sync_service_templates(source_root, service_name, service_dir):
     if not os.path.exists(target_templates):
         os.makedirs(target_templates)
 
-    # Copy all files and folders from source templates to target templates
+    # Remove existing files in target templates directory
+    for item in os.listdir(target_templates):
+        item_path = os.path.join(target_templates, item)
+        if os.path.isfile(item_path):
+            os.unlink(item_path)
+        elif os.path.isdir(item_path):
+            shutil.rmtree(item_path)
+
+    # Copy common templates (base, header, footer, etc.)
     for item in os.listdir(source_templates):
         source_path = os.path.join(source_templates, item)
         target_path = os.path.join(target_templates, item)
 
-        if os.path.isdir(source_path):
-            if os.path.exists(target_path):
-                shutil.rmtree(target_path)
-            shutil.copytree(source_path, target_path)
-        elif os.path.isfile(source_path):
+        if os.path.isfile(source_path):
             shutil.copy2(source_path, target_path)
 
-    print(f"Copied all templates to {service_name} service")
+    # Copy service-specific templates (e.g., auth folder)
+    service_template_folder = os.path.join(source_templates, service_name)
+    if os.path.exists(service_template_folder):
+        target_service_folder = os.path.join(target_templates, service_name)
+        shutil.copytree(service_template_folder, target_service_folder)
+
+    print(f"Copied templates for {service_name} service")
 
 def update_app_files(source_root, target_root):
     """Update the app.py and config.py for each service"""

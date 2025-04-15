@@ -2,7 +2,6 @@ from datetime import datetime
 
 from flask import Blueprint, flash, redirect, render_template, request
 from flask_jwt_extended import get_jwt_identity
-from sqlalchemy import func
 
 from app import db
 from app.models.application import ApplicationForm
