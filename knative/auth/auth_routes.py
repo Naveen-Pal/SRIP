@@ -92,8 +92,7 @@ def send_otp(email, otp):
         server.sendmail(sender_email, email, f"Subject: {subject}\n\n{message}")
         server.quit()
     except Exception as e:
-        print("Error sending email:", e)
-
+        print(f"Error sending email: {e}")
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':

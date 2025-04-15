@@ -1,6 +1,7 @@
 from datetime import datetime
 import random
 import uuid
+from datetime import timedelta  
 
 from flask import Blueprint, flash, g, jsonify, make_response, redirect, render_template, request
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, set_access_cookies, unset_jwt_cookies,verify_jwt_in_request
@@ -12,14 +13,6 @@ from app.models.intern import InternDetail
 from app.utils.auth_utils import check_password, generate_token, hash_password
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
-def generate_token(user_id, role):
-    print("Generating token for user_id:", user_id, "with role:", role)
-    access_token = create_access_token(
-        identity=str(user_id),  # identity must be a string/int
-        additional_claims={"role": role},
-        expires_delta=False
-    )
-    return access_token
 
 @bp.route('/prospective_intern', methods=['GET', 'POST'])
 def login_prospective_intern():
@@ -28,19 +21,12 @@ def login_prospective_intern():
         user_pass = request.form['user_pass']
         user = InternDetail.query.filter_by(email=user_mail, isSelected=0).first()
         
-        print(f"Login attempt for prospective intern: {user_mail}")
         if user:
-            print(f"User found with ID: {user.intern_id}")
             if check_password(user.password, user_pass):
-                print("Password check passed")
                 token = generate_token(user.intern_id, "prospective_intern")
                 response = make_response(redirect('/prospective_intern/projects'))
                 set_access_cookies(response, token)
                 return response
-            else:
-                print("Password check failed")
-        else:
-            print("User not found or not a prospective intern")
             
         flash("Invalid credentials or you are not registered as a prospective intern.", "danger")
 
@@ -54,19 +40,12 @@ def login_selected_intern():
         user_pass = request.form['user_pass']
         user = InternDetail.query.filter_by(email=user_mail, isSelected=1).first()
         
-        print(f"Login attempt for selected intern: {user_mail}")
         if user:
-            print(f"User found with ID: {user.intern_id}")
             if check_password(user.password, user_pass):
-                print("Password check passed")
                 token = generate_token(user.intern_id, "selected_intern")
                 response = make_response(redirect('/selected_intern/'))
                 set_access_cookies(response, token)
                 return response
-            else:
-                print("Password check failed")
-        else:
-            print("User not found or not a selected intern")
             
         flash("Invalid credentials or you are not registered as a selected intern.", "danger")
 
@@ -241,7 +220,6 @@ def decode_jwt():
         role = get_jwt()["role"]
         g.user_id = identity
         g.user_type = role
-        print(f"User ID: {g.user_id}, User Type: {g.user_type}")
 
         if role == "faculty":
             g.user_obj = Faculty.query.get(identity)
@@ -251,17 +229,14 @@ def decode_jwt():
             g.user_obj = InternDetail.query.get(identity)
         else:
             g.user_obj = None
-        print(f"User ID: {g.user_id}, User Type: {g.user_type}, User Object: {g.user_obj}")
 
     except Exception as e:
-        print(f"JWT verification failed: {str(e)}")
         g.user_id = None
         g.user_type = None
         g.user_obj = None
 @bp.app_context_processor
 def inject_user():
     """Inject user information into templates"""
-
     return dict(
         user=getattr(g, "user", None),
         user_id=getattr(g, "user_id", None),

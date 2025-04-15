@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
-from flask_jwt_extended import get_jwt_identity,verify_jwt_in_request
+from flask_jwt_extended import get_jwt_identity
 
 from app.models.application import ApplicationForm
 from app.models.intern import InternDetail
@@ -12,7 +12,6 @@ bp = Blueprint('prospective_intern', __name__, url_prefix='/prospective_intern')
 
 @bp.route('/projects', methods=['GET'])
 def projects():
-    print("inside projects")
     projects = Project.query.with_entities(Project.project_id, Project.project_title, Project.project_description, Project.faculty_id).all()
     
     project_list = []
@@ -120,7 +119,6 @@ def submit_application():
         
     except Exception as e:
         db.session.rollback()
-        print(f"Error submitting application: {str(e)}")
         return jsonify({
             'success': False,
             'message': 'An error occurred while submitting your application'
