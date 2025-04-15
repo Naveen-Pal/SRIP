@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Weekly Submissions{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/selected_intern/">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Weekly Submissions</li>
+        </ol>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 mb-0">Weekly Submissions</h1>
+            <p class="text-muted">Manage your Tuesday and Friday progress reports</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="submissionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Create New Submission
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="submissionDropdown">
+                    <li><a class="dropdown-item" href="/selected_intern/weekly_submission/tuesday">Tuesday Submission</a></li>
+                    <li><a class="dropdown-item" href="/selected_intern/weekly_submission/friday">Friday Submission</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#all" data-bs-toggle="tab" role="tab">All</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#tuesday" data-bs-toggle="tab" role="tab">Tuesday</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#friday" data-bs-toggle="tab" role="tab">Friday</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body p-0">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="all" role="tabpanel">
+                            {% include "intern/partials/weekly_submissions_table.html" with submissions=submissions %}
+                        </div>
+                        <div class="tab-pane fade" id="tuesday" role="tabpanel">
+                            {% set tuesday_submissions = submissions|selectattr('submission_type', 'equalto', 'tuesday')|list %}
+                            {% include "intern/partials/weekly_submissions_table.html" with submissions=tuesday_submissions %}
+                        </div>
+                        <div class="tab-pane fade" id="friday" role="tabpanel">
+                            {% set friday_submissions = submissions|selectattr('submission_type', 'equalto', 'friday')|list %}
+                            {% include "intern/partials/weekly_submissions_table.html" with submissions=friday_submissions %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

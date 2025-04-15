@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Research Proposal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/selected_intern">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Research Proposal</li>
+        </ol>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 mb-0">Research Proposal</h1>
+            <p class="text-muted">Submit your detailed research plan for the project</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            {% if proposal %}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Your Proposal</h5>
+                        <span class="badge {% if proposal.status == 'pending' %}bg-warning{% elif proposal.status == 'approved' %}bg-success{% elif proposal.status == 'rejected' %}bg-danger{% endif %} fs-6">
+                            {{ proposal.status|capitalize }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="mb-3">{{ proposal.title }}</h4>
+                        
+                        <div class="mb-4">
+                            <h6 class="text-muted mb-2">Proposal Content:</h6>
+                            <div class="p-3 bg-light rounded">
+                                {{ proposal.proposal_content }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <p class="mb-1"><strong>Submitted:</strong> {{ proposal.submission_date.strftime('%d %B %Y, %H:%M') }}</p>
+                        </div>
+                        
+                        {% if proposal.feedback %}
+                            <div class="card mb-3 border-info">
+                                <div class="card-header bg-info bg-opacity-10">
+                                    <h6 class="mb-0">Faculty Feedback</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-1">{{ proposal.feedback }}</p>
+                                    <small class="text-muted">Feedback provided on {{ proposal.feedback_date.strftime('%d %B %Y') }}</small>
+                                </div>
+                            </div>
+                        {% elif proposal.status == 'pending' %}
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> Your proposal is being reviewed by the faculty. You will receive feedback soon.
+                            </div>
+                        {% endif %}
+                        
+                        {% if proposal.status == 'rejected' %}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i> Your proposal was not approved. Please contact your faculty mentor for guidance on submitting a revised proposal.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Submit Research Proposal</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="" method="post">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Proposal Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="proposal_content" class="form-label">Proposal Content <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="proposal_content" name="proposal_content" rows="12" required></textarea>
+                                <small class="text-muted">
+                                    Include the following sections in your proposal:
+                                    <ul>
+                                        <li>Introduction and background</li>
+                                        <li>Research objectives and questions</li>
+                                        <li>Methodology</li>
+                                        <li>Timeline</li>
+                                        <li>Expected outcomes</li>
+                                        <li>References</li>
+                                    </ul>
+                                </small>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="/selected_intern/" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-primary">Submit Proposal</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Project Information</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-2">{{ project.project_title }}</h6>
+                    <p class="mb-3 small">{{ project.project_description|truncate(200) }}</p>
+                    
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>Faculty Mentor:</strong> {{ faculty.full_name }}</p>
+                        <p class="mb-1"><strong>Email:</strong> {{ faculty.email }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li class="mb-2">Your research proposal should clearly outline how you plan to approach the project.</li>
+                        <li class="mb-2">Be specific about the methodologies you plan to use.</li>
+                        <li class="mb-2">Include a realistic timeline for completion.</li>
+                        <li class="mb-2">Cite relevant literature where appropriate.</li>
+                        <li class="mb-2">After submission, your faculty mentor will review the proposal and provide feedback.</li>
+                        <li>You may need to revise your proposal based on the feedback received.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

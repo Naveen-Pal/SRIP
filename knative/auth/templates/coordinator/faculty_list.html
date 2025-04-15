@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Faculty List - Coordinator Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/coordinator/">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Faculty List</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Faculty List</h1>
+                <div>
+                    <a href="/coordinator/add_faculty" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Faculty
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Search and Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form action="/coordinator/faculty_list" method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" placeholder="Search by name or email" value="{{ search }}">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <label class="input-group-text" for="filter">Show</label>
+                                <select class="form-select" id="filter" name="filter">
+                                    <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Faculty</option>
+                                    <option value="allowed" {% if filter_type == 'allowed' %}selected{% endif %}>Approved Faculty</option>
+                                    <option value="unallowed" {% if filter_type == 'unallowed' %}selected{% endif %}>Not Approved Faculty</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <label class="input-group-text" for="sort-order">Sort by</label>
+                                <select class="form-select" id="sort-order" name="sort">
+                                    <option value="faculty_id" {% if sort_by == 'faculty_id' %}selected{% endif %}>ID</option>
+                                    <option value="full_name" {% if sort_by == 'full_name' %}selected{% endif %}>Name</option>
+                                    <option value="email" {% if sort_by == 'email' %}selected{% endif %}>Email</option>
+                                    <option value="allowed" {% if sort_by == 'allowed' %}selected{% endif %}>Status</option>
+                                </select>
+                                <select class="form-select" name="order">
+                                    <option value="asc" {% if order == 'asc' %}selected{% endif %}>Ascending</option>
+                                    <option value="desc" {% if order == 'desc' %}selected{% endif %}>Descending</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-secondary w-100">
+                                <i class="fas fa-filter"></i> Apply
+                            </button>
+                        </div>
+                        <div class="col-md-12 text-end">
+                            <a href="/coordinator/faculty_list" class="btn btn-outline-secondary">
+                                <i class="fas fa-sync"></i> Reset
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Faculty List Table -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Projects</th>
+                                    <th scope="col">Applications</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in faculty_data %}
+                                <tr>
+                                    <td>{{ item.faculty.faculty_id }}</td>
+                                    <td>{{ item.faculty.full_name }}</td>
+                                    <td>{{ item.faculty.email }}</td>
+                                    <td>
+                                        {% if item.faculty.allowed == 1 %}
+                                        <span class="badge bg-success">Approved</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Not Approved</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="/coordinator/faculty/{{ item.faculty.faculty_id }}/projects" class="text-decoration-none">
+                                            {{ item.project_count }} 
+                                            <i class="fas fa-external-link-alt small"></i>
+                                        </a>
+                                    </td>
+                                    <td>{{ item.application_count }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="/coordinator/faculty/{{ item.faculty.faculty_id }}/projects" class="btn btn-sm btn-info">
+                                                <i class="fas fa-project-diagram"></i> Projects
+                                            </a>
+                                            <form method="post" action='/coordinator/faculty_list' style="display:inline;" onsubmit="return confirm('Are you sure you want to {{ 'revoke' if item.faculty.allowed == 1 else 'approve' }} this faculty?');">
+                                                <input type="hidden" name="faculty_id" value="{{ item.faculty.faculty_id }}">
+                                                <input type="hidden" name="action" value="toggle">
+                                                <button type="submit" class="btn btn-sm {{ 'btn-warning' if item.faculty.allowed == 1 else 'btn-success' }}">
+                                                    <i class="fas {{ 'fa-ban' if item.faculty.allowed == 1 else 'fa-check' }}"></i> 
+                                                    {{ 'Revoke' if item.faculty.allowed == 1 else 'Approve' }}
+                                                </button>
+                                            </form>
+                                            <form method="post" action='/coordinator/faculty_list' style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this faculty? This action cannot be undone.');">
+                                                <input type="hidden" name="faculty_id" value="{{ item.faculty.faculty_id }}">
+                                                <input type="hidden" name="action" value="delete">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No faculty found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+{% endblock %}

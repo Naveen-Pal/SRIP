@@ -78,41 +78,24 @@ def sync_service_templates(source_root, service_name, service_dir):
     """Sync templates relevant to specific service"""
     source_templates = os.path.join(source_root, 'app', 'templates')
     target_templates = os.path.join(service_dir, 'templates')
-    
+
     # Ensure target templates directory exists
     if not os.path.exists(target_templates):
         os.makedirs(target_templates)
-        
-    # Copy common templates
-    common_templates = ['base.html', 'header.html', 'footer.html', 'home.html']
-    for template in common_templates:
-        source_path = os.path.join(source_templates, template)
-        if os.path.exists(source_path):
-            shutil.copy2(source_path, os.path.join(target_templates, template))
-            
-    # Copy auth templates folder (needed by most services)
-    source_auth = os.path.join(source_templates, 'auth')
-    target_auth = os.path.join(target_templates, 'auth')
-    if os.path.exists(source_auth):
-        if os.path.exists(target_auth):
-            shutil.rmtree(target_auth)
-        shutil.copytree(source_auth, target_auth)
-    
-    # Copy service-specific templates
-    if service_name in ['auth', 'coordinator', 'faculty', 'home', 'prospective_intern', 'selected_intern']:
-        # Map 'prospective_intern' and 'selected_intern' to 'intern' template folder
-        template_folder = 'intern' if service_name in ['prospective_intern', 'selected_intern'] else service_name
-        
-        source_specific = os.path.join(source_templates, template_folder)
-        target_specific = os.path.join(target_templates, template_folder)
-        
-        if os.path.exists(source_specific):
-            if os.path.exists(target_specific):
-                shutil.rmtree(target_specific)
-            shutil.copytree(source_specific, target_specific)
-            print(f"Copied templates for {service_name} service")
-        else:
-            print(f"Warning: Template directory for {service_name} does not exist")
+
+    # Copy all files and folders from source templates to target templates
+    for item in os.listdir(source_templates):
+        source_path = os.path.join(source_templates, item)
+        target_path = os.path.join(target_templates, item)
+
+        if os.path.isdir(source_path):
+            if os.path.exists(target_path):
+                shutil.rmtree(target_path)
+            shutil.copytree(source_path, target_path)
+        elif os.path.isfile(source_path):
+            shutil.copy2(source_path, target_path)
+
+    print(f"Copied all templates to {service_name} service")
 
 def update_app_files(source_root, target_root):
     """Update the app.py and config.py for each service"""

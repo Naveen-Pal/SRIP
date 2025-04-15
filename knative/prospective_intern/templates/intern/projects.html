@@ -1,42 +1,192 @@
 {% extends "base.html" %}
 
-{% block title %}Intern Application Form{% endblock %}
+{% block title %}Available Projects{% endblock %}
 
 {% block content %}
-<h2>Projects</h2>
+<div class="container my-4">
+    <h2 class="mb-4">Available Projects</h2>
 
-<!-- Search bar -->
-<input type="text" id="search" onkeyup="searchProjects()" placeholder="Search by title or faculty..." style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 16px;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-<!-- Projects Table -->
-<table id="projects-table" style="width: 100%; border-collapse: collapse;">
-    <thead>
-        <tr style="background-color: #add8e6; color: black;">
-            <th style="padding: 10px; border: 1px solid #ddd;">Project ID</th>
-            <th style="padding: 10px; border: 1px solid #ddd;">Title</th>
-            <th style="padding: 10px; border: 1px solid #ddd; width: 40%;">Description</th>
-            <th style="padding: 10px; border: 1px solid #ddd;">Faculty</th>
-            <th style="padding: 10px; border: 1px solid #ddd;">Apply</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for project in projects|sort(attribute='project_id') %}
-        <tr>
-            <td style="padding: 10px; border: 1px solid #ddd;">{{ project.project_id }}</td>
-            <td style="padding: 10px; border: 1px solid #ddd;">{{ project.project_title }}</td>
-            <td style="padding: 10px; border: 1px solid #ddd; width: 40%;">{{ project.project_description }}</td>
-            <td style="padding: 10px; border: 1px solid #ddd;">{{ project.faculty_id }}</td>
-            <td style="padding: 10px; border: 1px solid #ddd;">
-                <a href="/intern/{{ project.project_id }}"
-                style="text-decoration: none; background-color: #007bff; color: white; padding: 5px 10px; border-radius: 5px;">
-                Apply
-             </a>
-             
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <!-- Search bar -->
+    <div class="mb-3">
+        <input type="text" id="search" onkeyup="searchProjects()" placeholder="Search by title or faculty..." class="form-control">
+    </div>
+
+    <!-- Projects Table -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table id="projects-table" class="table table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th style="padding: 12px 15px;">Project ID</th>
+                        <th style="padding: 12px 15px;">Title</th>
+                        <th style="padding: 12px 15px; width: 40%;">Description</th>
+                        <th style="padding: 12px 15px;">Faculty</th>
+                        <th style="padding: 12px 15px;">Apply</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects|sort(attribute='project_id') %}
+                    <tr>
+                        <td style="padding: 12px 15px;">{{ project.project_id }}</td>
+                        <td style="padding: 12px 15px;">{{ project.project_title }}</td>
+                        <td style="padding: 12px 15px; width: 40%;">{{ project.project_description }}</td>
+                        <td style="padding: 12px 15px;">{{ project.faculty_name }}</td>
+                        <td style="padding: 12px 15px;">
+                            {% if user_id %}
+                                <button type="button" 
+                                   class="btn btn-primary btn-sm apply-btn" 
+                                   data-bs-toggle="modal" 
+                                   data-bs-target="#applicationModal"
+                                   data-project-id="{{ project.project_id }}"
+                                   data-project-title="{{ project.project_title }}"
+                                   data-faculty-id="{{ project.faculty_id }}"
+                                   data-faculty-name="{{ project.faculty_name }}"
+                                   data-project-description="{{ project.project_description }}">
+                                    Apply
+                                </button>
+                            {% else %}
+                                <a href="/auth/prospective_intern" class="btn btn-outline-primary btn-sm">
+                                    Log in to Apply
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Application Modal -->
+<div class="modal fade" id="applicationModal" tabindex="-1" aria-labelledby="applicationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="applicationModalLabel">Submit Application</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="applicationForm" method="POST" action="/prospective_intern/submit_application">
+                    <!-- Project Details Section -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Project Details</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <label class="form-label small text-muted">Project ID</label>
+                                        <div class="form-control bg-light" id="modal-project-id"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <label class="form-label small text-muted">Faculty</label>
+                                        <div class="form-control bg-light" id="modal-faculty-name"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">Project Title</label>
+                                <div class="form-control bg-light" id="modal-project-title"></div>
+                            </div>
+                            <div>
+                                <label class="form-label small text-muted">Project Description</label>
+                                <div class="form-control bg-light" style="height: auto; max-height: 150px; overflow-y: auto;" id="modal-project-description"></div>
+                            </div>
+                            
+                            <!-- Hidden fields for form submission -->
+                            <input type="hidden" name="project_code" id="hidden-project-id">
+                            <input type="hidden" name="faculty" id="hidden-faculty-id">
+                        </div>
+                    </div>
+                    
+                    <!-- Application Details Section -->
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Your Application</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="statement_of_purpose" class="form-label required">Statement of Purpose</label>
+                                <textarea class="form-control" name="statement_of_purpose" id="statement_of_purpose" rows="5" required
+                                    placeholder="Explain why you're interested in this project and what qualifies you for it"></textarea>
+                                <div class="form-text">Please provide a clear explanation of your interest in this project and highlight your relevant skills and qualifications.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label required">Can you complete 8 weeks of Internship between May 5 to July 15?</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="can_complete_internship" id="can-complete-yes" value="yes" checked>
+                                    <label class="form-check-label" for="can-complete-yes">Yes</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="can_complete_internship" id="can-complete-no" value="no">
+                                    <label class="form-check-label" for="can-complete-no">No</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitApplication">Submit Application</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Required field indicator */
+    .required:after {
+        content: " *";
+        color: red;
+    }
+    
+    /* Make project details read-only style consistent */
+    .form-control.bg-light {
+        cursor: not-allowed;
+    }
+    
+    /* Improve modal appearance */
+    .modal-content {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .modal-header {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+    
+    .modal-footer {
+        border-top: 1px solid rgba(0,0,0,.1);
+    }
+    
+    /* Card styling */
+    .card {
+        box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        border: none;
+    }
+    
+    .card-header {
+        background-color: #f8f9fa !important;
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+</style>
 
 <script>
     function searchProjects() {
@@ -46,13 +196,114 @@
         rows.forEach(row => {
             let title = row.cells[1].textContent.toLowerCase();
             let faculty = row.cells[3].textContent.toLowerCase();
-            if (title.includes(input) || faculty.includes(input)) {
+            let description = row.cells[2].textContent.toLowerCase();
+            
+            if (title.includes(input) || faculty.includes(input) || description.includes(input)) {
                 row.style.display = "";
             } else {
                 row.style.display = "none";
             }
         });
     }
+    
+    // Initialize modal data when opened
+    document.addEventListener('DOMContentLoaded', function() {
+        const applicationModal = document.getElementById('applicationModal');
+        if (applicationModal) {
+            applicationModal.addEventListener('show.bs.modal', function (event) {
+                // Button that triggered the modal
+                const button = event.relatedTarget;
+                
+                // Extract project data from button attributes
+                const projectId = button.getAttribute('data-project-id');
+                const projectTitle = button.getAttribute('data-project-title');
+                const facultyId = button.getAttribute('data-faculty-id');
+                const facultyName = button.getAttribute('data-faculty-name');
+                const projectDescription = button.getAttribute('data-project-description');
+                
+                // Update modal content with project data
+                document.getElementById('modal-project-id').textContent = projectId;
+                document.getElementById('modal-project-title').textContent = projectTitle;
+                document.getElementById('modal-faculty-name').textContent = facultyName;
+                document.getElementById('modal-project-description').textContent = projectDescription;
+                
+                // Set hidden form fields
+                document.getElementById('hidden-project-id').value = projectId;
+                document.getElementById('hidden-faculty-id').value = facultyId;
+            });
+        }
+        
+        // Handle form submission via AJAX
+        const submitButton = document.getElementById('submitApplication');
+        if (submitButton) {
+            submitButton.addEventListener('click', function() {
+                const form = document.getElementById('applicationForm');
+                
+                // Check form validity
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+                
+                // Create FormData object for AJAX submission
+                const formData = new FormData(form);
+                
+                // Submit form using fetch API
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(applicationModal);
+                    modal.hide();
+                    
+                    // Show success message
+                    if (data.success) {
+                        const alertHTML = `
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `;
+                        document.querySelector('.container').insertAdjacentHTML('afterbegin', alertHTML);
+                        
+                        // Redirect after delay if needed
+                        if (data.redirect) {
+                            setTimeout(() => {
+                                window.location.href = data.redirect;
+                            }, 1500);
+                        }
+                    } else {
+                        // Show error message
+                        const alertHTML = `
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `;
+                        document.querySelector('.container').insertAdjacentHTML('afterbegin', alertHTML);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Show error message
+                    const alertHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            An error occurred. Please try again.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
+                    document.querySelector('.container').insertAdjacentHTML('afterbegin', alertHTML);
+                });
+            });
+        }
+    });
 </script>
 
 {% endblock %}
