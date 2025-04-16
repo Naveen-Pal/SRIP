@@ -5,15 +5,15 @@ from flask import Blueprint, flash, redirect, render_template, request
 from flask_jwt_extended import get_jwt_identity
 from werkzeug.utils import secure_filename
 
-from app import db
-from app.models.application import ApplicationForm
-from app.models.faculty import Faculty
-from app.models.intern import InternDetail
-from app.models.milestone_submission import MilestoneSubmission
-from app.models.project import Project
-from app.models.research_proposal import ResearchProposal
-from app.models.weekly_submission import WeeklySubmission
-from app.utils.auth_utils import role_required
+from database import db
+from models.application import ApplicationForm
+from models.faculty import Faculty
+from models.intern import InternDetail
+from models.milestone_submission import MilestoneSubmission
+from models.project import Project
+from models.research_proposal import ResearchProposal
+from models.weekly_submission import WeeklySubmission
+from utils.auth_utils import role_required
 
 bp = Blueprint('selected_intern', __name__, url_prefix='/selected_intern')
 
@@ -269,7 +269,7 @@ def milestone_submission(submission_type):
             document = request.files['document']
             if document.filename:
                 filename = secure_filename(f"{intern_id}_{submission_type}_{document.filename}")
-                upload_path = os.path.join('app/static/uploads', filename)
+                upload_path = os.path.join('static/uploads', filename)
                 document.save(upload_path)
                 document_path = f"/static/uploads/{filename}"
             

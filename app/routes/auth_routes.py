@@ -1,7 +1,7 @@
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 from flask import Blueprint, flash, g, jsonify, make_response, redirect, render_template, request
-from flask_jwt_extended import get_jwt, get_jwt_identity, set_access_cookies, unset_jwt_cookies,verify_jwt_in_request
-from app import db
+from flask_jwt_extended import get_jwt, get_jwt_identity, set_access_cookies, unset_jwt_cookies, verify_jwt_in_request
+from app.database import db
 from app.models.coordinator import Coordinator
 from app.models.faculty import Faculty
 from app.models.intern import InternDetail
@@ -11,6 +11,19 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/prospective_intern', methods=['GET', 'POST'])
 def login_prospective_intern():
+    # Try to verify JWT first - if valid, redirect to projects
+    try:
+        verify_jwt_in_request(locations=["cookies"], optional=True)
+        identity = get_jwt_identity()
+        if identity:
+            claims = get_jwt()
+            user_role = claims.get("role")
+            if user_role == "prospective_intern":
+                return redirect('/prospective_intern/projects')
+    except Exception:
+        # Continue with login process if token invalid
+        pass
+        
     if request.method == 'POST':
         user_mail = request.form['user_mail']
         user_pass = request.form['user_pass']
@@ -30,6 +43,19 @@ def login_prospective_intern():
 
 @bp.route('/selected_intern', methods=['GET', 'POST'])
 def login_selected_intern():
+    # Try to verify JWT first - if valid, redirect to dashboard
+    try:
+        verify_jwt_in_request(locations=["cookies"], optional=True)
+        identity = get_jwt_identity()
+        if identity:
+            claims = get_jwt()
+            user_role = claims.get("role")
+            if user_role == "selected_intern":
+                return redirect('/selected_intern/')
+    except Exception:
+        # Continue with login process if token invalid
+        pass
+        
     if request.method == 'POST':
         user_mail = request.form['user_mail']
         user_pass = request.form['user_pass']
@@ -50,6 +76,19 @@ def login_selected_intern():
 
 @bp.route('/faculty', methods=['GET', 'POST'])
 def login_faculty():
+    # Try to verify JWT first - if valid, redirect to faculty dashboard
+    try:
+        verify_jwt_in_request(locations=["cookies"], optional=True)
+        identity = get_jwt_identity()
+        if identity:
+            claims = get_jwt()
+            user_role = claims.get("role")
+            if user_role == "faculty":
+                return redirect('/faculty/')
+    except Exception:
+        # Continue with login process if token invalid
+        pass
+        
     if request.method == 'POST':
         email = request.form['email']
         user_pass = request.form['user_pass']
@@ -66,6 +105,19 @@ def login_faculty():
 
 @bp.route('/coordinator', methods=['GET', 'POST'])
 def login_coordinator():
+    # Try to verify JWT first - if valid, redirect to coordinator dashboard
+    try:
+        verify_jwt_in_request(locations=["cookies"], optional=True)
+        identity = get_jwt_identity()
+        if identity:
+            claims = get_jwt()
+            user_role = claims.get("role")
+            if user_role == "coordinator":
+                return redirect('/coordinator/')
+    except Exception:
+        # Continue with login process if token invalid
+        pass
+        
     if request.method == 'POST':
         user_email = request.form['user_email']
         user_pass = request.form['user_pass']
@@ -239,4 +291,4 @@ def inject_user():
         user_obj=getattr(g, "user_obj", None)
     )
 
-    
+

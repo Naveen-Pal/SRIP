@@ -5,7 +5,7 @@ from app.models.project import Project
 from app.models.application import ApplicationForm
 from app.models.intern import InternDetail
 from app.utils.email_utils import send_email
-from app import db
+from app.database import db
 from sqlalchemy import or_, func
 
 bp = Blueprint('coordinator', __name__, url_prefix='/coordinator')

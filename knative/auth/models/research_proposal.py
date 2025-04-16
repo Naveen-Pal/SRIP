@@ -1,4 +1,4 @@
-from app import db
+from database import db
 from datetime import datetime
 
 class ResearchProposal(db.Model):
@@ -6,7 +6,7 @@ class ResearchProposal(db.Model):
     intern_id = db.Column(db.Integer, nullable=False)
     project_id = db.Column(db.Integer, nullable=False)
     faculty_id = db.Column(db.Integer, nullable=False)
-    title = db.Column(db.String(200), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
     proposal_content = db.Column(db.Text, nullable=False)
     submission_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     status = db.Column(db.String(20), nullable=False, default='pending')  # pending, approved, rejected

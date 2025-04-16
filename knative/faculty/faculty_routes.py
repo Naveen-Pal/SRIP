@@ -3,15 +3,15 @@ from datetime import datetime
 from flask import Blueprint, flash, redirect, render_template, request
 from flask_jwt_extended import get_jwt_identity
 
-from app import db
-from app.models.application import ApplicationForm
-from app.models.faculty import Faculty
-from app.models.intern import InternDetail
-from app.models.milestone_submission import MilestoneSubmission
-from app.models.project import Project
-from app.models.research_proposal import ResearchProposal
-from app.models.weekly_submission import WeeklySubmission
-from app.utils.auth_utils import role_required
+from database import db
+from models.application import ApplicationForm
+from models.faculty import Faculty
+from models.intern import InternDetail
+from models.milestone_submission import MilestoneSubmission
+from models.project import Project
+from models.research_proposal import ResearchProposal
+from models.weekly_submission import WeeklySubmission
+from utils.auth_utils import role_required
 
 bp = Blueprint('faculty', __name__, url_prefix='/faculty')
 
