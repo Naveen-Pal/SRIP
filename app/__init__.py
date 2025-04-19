@@ -1,14 +1,11 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail
-from flask_sqlalchemy import SQLAlchemy
+from .database import db
 from .config import Config
 
-db = SQLAlchemy()
 jwt = JWTManager()
 mail = Mail()
-
-from .routes import auth_routes, coordinator_routes, faculty_routes, home_routes, prospective_intern_routes, selected_intern_routes
 
 def create_app():
     app = Flask(__name__)
@@ -18,6 +15,9 @@ def create_app():
     jwt.init_app(app)
     # mail.init_app(app)
 
+    # Import blueprints inside the factory function to avoid circular imports
+    from .routes import auth_routes, coordinator_routes, faculty_routes, home_routes, prospective_intern_routes, selected_intern_routes
+    
     app.register_blueprint(auth_routes.bp)
     app.register_blueprint(coordinator_routes.bp)
     app.register_blueprint(faculty_routes.bp)

@@ -2,9 +2,8 @@ from datetime import datetime
 
 from flask import Blueprint, flash, redirect, render_template, request
 from flask_jwt_extended import get_jwt_identity
-from sqlalchemy import and_, func, or_
 
-from app import db
+from app.database import db
 from app.models.application import ApplicationForm
 from app.models.faculty import Faculty
 from app.models.intern import InternDetail

@@ -9,7 +9,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>Coordinator Dashboard</h1>
                 <div>
-                    <a href="{{ url_for('coordinator.add_faculty') }}" class="btn btn-primary">Add Faculty</a>
+                    <a href="/coordinator/add_faculty" class="btn btn-primary">Add Faculty</a>
                 </div>
             </div>
             
@@ -25,7 +25,7 @@
                                 </div>
                                 <i class="fas fa-user-tie fa-2x"></i>
                             </div>
-                            <a href="{{ url_for('coordinator.faculty_list') }}" class="text-white">View Details <i class="fas fa-arrow-right ml-1"></i></a>
+                            <a href="/coordinator/faculty_list" class="text-white">View Details <i class="fas fa-arrow-right ml-1"></i></a>
                         </div>
                     </div>
                 </div>
@@ -40,7 +40,7 @@
                                 </div>
                                 <i class="fas fa-project-diagram fa-2x"></i>
                             </div>
-                            <a href="{{ url_for('coordinator.faculty_list') }}" class="text-white">View Details <i class="fas fa-arrow-right ml-1"></i></a>
+                            <a href="/coordinator/faculty_list" class="text-white">View Details <i class="fas fa-arrow-right ml-1"></i></a>
                         </div>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                                 </div>
                                 <i class="fas fa-file-alt fa-2x"></i>
                             </div>
-                            <a href="{{ url_for('coordinator.applications_list') }}" class="text-white">View Applications <i class="fas fa-arrow-right ml-1"></i></a>
+                            <a href="/coordinator/applications" class="text-white">View Applications <i class="fas fa-arrow-right ml-1"></i></a>
                         </div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                                 </div>
                                 <i class="fas fa-users fa-2x"></i>
                             </div>
-                            <a href="{{ url_for('coordinator.interns_list') }}" class="text-dark">View All Interns <i class="fas fa-arrow-right ml-1"></i></a>
+                            <a href="/coordinator/interns" class="text-dark">View All Interns <i class="fas fa-arrow-right ml-1"></i></a>
                         </div>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                                 </div>
                                 <i class="fas fa-user-check fa-2x"></i>
                             </div>
-                            <a href="{{ url_for('coordinator.interns_list', status='selected') }}" class="text-white">View Selected <i class="fas fa-arrow-right ml-1"></i></a>
+                            <a href="/coordinator/interns?status=selected" class="text-white">View Selected <i class="fas fa-arrow-right ml-1"></i></a>
                         </div>
                     </div>
                 </div>
@@ -102,7 +102,7 @@
                                 </div>
                                 <i class="fas fa-user-clock fa-2x"></i>
                             </div>
-                            <a href="{{ url_for('coordinator.interns_list', status='waitlisted') }}" class="text-white">View Waitlisted <i class="fas fa-arrow-right ml-1"></i></a>
+                            <a href="/coordinator/interns?status=waitlisted" class="text-white">View Waitlisted <i class="fas fa-arrow-right ml-1"></i></a>
                         </div>
                     </div>
                 </div>
@@ -124,14 +124,14 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <div class="d-grid">
-                                <a href="{{ url_for('coordinator.email_selected_interns') }}" class="btn btn-outline-success btn-lg">
+                                <a href="/coordinator/email_selected_interns" class="btn btn-outline-success btn-lg">
                                     <i class="fas fa-envelope mr-2"></i> Email Selected Interns
                                 </a>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <div class="d-grid">
-                                <a href="{{ url_for('coordinator.email_waitlisted_interns') }}" class="btn btn-outline-warning btn-lg">
+                                <a href="/coordinator/email_waitlisted_interns" class="btn btn-outline-warning btn-lg">
                                     <i class="fas fa-envelope mr-2"></i> Email Waitlisted
                                 </a>
                             </div>

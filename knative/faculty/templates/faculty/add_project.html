@@ -1,22 +1,90 @@
 {% extends "base.html" %}
 
-{% block title %}Add Project{% endblock %}
+{% block title %}Add New Project{% endblock %}
 
 {% block content %}
-<h2>Add Project</h2>
-<form action="" method="post">
-    <label for="project_title">Project Title:</label>
-    <input type="text" id="project_title" name="project_title" required>
-    <label for="project_description">Project Description:</label>
-    <textarea id="project_description" name="project_description" required></textarea>
-    <label for="number_of_student">Number of Students:</label>
-    <input type="number" id="number_of_student" name="number_of_student" required>
-    <label for="faculty_email">Faculty Email:</label>
-    <input type="email" id="faculty_email" name="faculty_email" required>
-    <label for="project_code">Project Code:</label>
-    <input type="text" id="project_code" name="project_code" required>
-    <button type="submit">Add Project</button>
-</form>
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/faculty/">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/faculty/projects">Projects</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Project</li>
+        </ol>
+    </nav>
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h2 mb-0">Add New Project</h1>
+            <p class="text-muted">Create a new research project for SRIP</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Project Details</h5>
+                </div>
+                <div class="card-body">
+                    <form action="" method="post">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="project_title" class="form-label">Project Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="project_title" name="project_title" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="project_description" class="form-label">Project Description <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="project_description" name="project_description" rows="6" required></textarea>
+                                <small class="text-muted">Describe the project objectives, requirements, and expected outcomes.</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="number_of_student" class="form-label">Stipend <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="number_of_student" name="number_of_student" min="1" value="10000" required>
+                                <!-- <small class="text-muted">Maximum number of students you want to work with on this project.</small> -->
+                            </div>
+                            <!-- <div class="col-md-6">
+                                <label for="faculty_email" class="form-label">Faculty Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="faculty_email" name="faculty_email" required>
+                                <small class="text-muted">Your institutional email for contact purposes.</small>
+                            </div> -->
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="project_mode" class="form-label">Fund Type <span class="text-danger">*</span></label>
+                                <select class="form-select" id="project_mode" name="project_mode" required>
+                                    <option value="remote">Institute</option>
+                                    <option value="onsite">Department</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/faculty/projects" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Create Project</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

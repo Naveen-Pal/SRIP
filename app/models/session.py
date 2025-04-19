@@ -1,4 +1,4 @@
-from app import db
+from app.database import db
 
 class Session(db.Model):
     session_id = db.Column(db.String(255), primary_key=True)

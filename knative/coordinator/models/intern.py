@@ -1,7 +1,9 @@
-from app import db
+from database import db
 
-class Intern(db.Model):
-    intern_id = db.Column(db.String(50), primary_key=True)
+class InternDetail(db.Model):
+    intern_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    password = db.Column(db.String(255), nullable=True)
+    isSelected = db.Column(db.Integer, nullable=False, default=0)
     full_name = db.Column(db.String(100), nullable=False)
     mobile = db.Column(db.String(20), nullable=False)
     nationality = db.Column(db.String(50), nullable=False)
@@ -20,9 +22,5 @@ class Intern(db.Model):
     gpa_type = db.Column(db.String(10), nullable=False)
     gpa_value = db.Column(db.Float, nullable=False)
     gender = db.Column(db.String(10), nullable=False)
-    statement_of_purpose = db.Column(db.Text, nullable=False)
-    can_complete_internship = db.Column(db.Boolean, nullable=False, default=False)
-    faculty = db.Column(db.String(500), nullable=False)
-    project_code = db.Column(db.String(10), nullable=False)
     time_stamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     time_stamp_modified = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
