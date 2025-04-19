@@ -1,7 +1,6 @@
 from flask import current_app, jsonify, redirect, request, url_for
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, jwt_required, verify_jwt_in_request
 from functools import wraps
-import smtplib
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import timedelta
 from app.config import Config
@@ -70,19 +69,3 @@ def role_required(required_role):
                 return redirect(f'/auth/{required_role}')
         return wrapper
     return decorator
-
-def send_otp(email, otp):
-    """Send OTP via email"""
-    sender_email = Config.MAIL_USERNAME
-    sender_password = Config.MAIL_PASSWORD
-    subject = "Your OTP for Registration"
-    message = f"Your OTP for registration is: {otp}"
-
-    try:
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.sendmail(sender_email, email, f"Subject: {subject}\n\n{message}")
-        server.quit()
-    except Exception as e:
-        raise Exception(f"Failed to send OTP: {str(e)}")
