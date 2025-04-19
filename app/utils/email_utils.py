@@ -1,10 +1,7 @@
 import smtplib
 from email.message import EmailMessage
-from load_dotenv import load_dotenv
 from app.config import Config
-import os
 
-load_dotenv()
 def send_email(subject,receiver_email, message):
     sender_email = Config.MAIL_USERNAME  # Your email address
     app_password = Config.MAIL_PASSWORD # App password from Gmail
