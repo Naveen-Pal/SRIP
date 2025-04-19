@@ -56,7 +56,7 @@ def login_faculty():
         email = request.form['email']
         user_pass = request.form['user_pass']
         user = Faculty.query.filter_by(email=email).first()
-        if user and check_password(user.password, user_pass):
+        if user and check_password(user.password, user_pass) and user.isSelected == 1:
             token = generate_token(user.faculty_id, "faculty")
             response = make_response(redirect('/faculty/'))  
             set_access_cookies(response, token)
