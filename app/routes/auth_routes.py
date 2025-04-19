@@ -1,8 +1,7 @@
 from datetime import datetime,timedelta
 import random
-import uuid
 from flask import Blueprint, flash, g, jsonify, make_response, redirect, render_template, request,session
-from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, set_access_cookies, unset_jwt_cookies,verify_jwt_in_request
+from flask_jwt_extended import get_jwt, get_jwt_identity, set_access_cookies, unset_jwt_cookies,verify_jwt_in_request
 from app import db
 from app.models.coordinator import Coordinator
 from app.models.faculty import Faculty
