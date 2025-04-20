@@ -1,4 +1,4 @@
-from app import db
+from app.database import db
 
 class ApplicationForm(db.Model):
     application_id = db.Column(db.Integer, primary_key=True, autoincrement=True)

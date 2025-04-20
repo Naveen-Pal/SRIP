@@ -1,4 +1,4 @@
-from app import db
+from database import db
 
 class Faculty(db.Model):
     faculty_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
